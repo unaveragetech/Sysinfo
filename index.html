@@ -1,0 +1,596 @@
+<html><head><base href="https://cdn.jsdelivr.net/"><script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script><link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>System Information Scanner v2</title><style>body {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);color: #e0e0e0;padding: 20px;line-height: 1.6;margin-left: 250px;}.sidebar {position: fixed;left: 0;top: 0;width: 250px;height: 100%;background: rgba(0, 0, 0, 0.3);backdrop-filter: blur(10px);padding: 20px;border-right: 1px solid rgba(255, 255, 255, 0.1);}.sidebar-item {padding: 10px;margin: 5px 0;border-radius: 5px;cursor: pointer;transition: all 0.3s ease;}.sidebar-item:hover {background: rgba(255, 255, 255, 0.1);transform: translateX(5px);}.sidebar-item.active {background: rgba(79, 209, 197, 0.2);box-shadow: 0 0 15px rgba(79, 209, 197, 0.3);}.container {max-width: 800px;margin: 0 auto;background: rgba(255, 255, 255, 0.1);border-radius: 15px;padding: 20px;backdrop-filter: blur(10px);box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);animation: fadeIn 1s ease-out;}.section {margin: 20px 0;padding: 15px;border: 1px solid rgba(255, 255, 255, 0.1);border-radius: 8px;background: rgba(0, 0, 0, 0.2);cursor: pointer;transition: all 0.3s ease;}.section:hover {transform: translateY(-2px);box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);}.section.active .data {max-height: 500px;padding-top: 10px;}.title {color: #4fd1c5;font-size: 1.2em;margin-bottom: 10px;display: flex;align-items: center;justify-content: space-between;}.title::after {content: '▼';font-size: 0.8em;transition: transform 0.3s ease;}.section.active .title::after {transform: rotate(180deg);}.data {color: #90cdf4;max-height: 0;overflow: hidden;transition: max-height 0.5s ease-out;}.warning {color: #fc8181;font-size: 0.9em;margin-top: 20px;padding: 10px;border-left: 3px solid #fc8181;background: rgba(252, 129, 129, 0.1);}.loading-overlay {position: fixed;top: 0;left: 0;width: 100%;height: 100%;background: rgba(0, 0, 0, 0.8);display: flex;justify-content: center;align-items: center;z-index: 1000;}.spinner {width: 50px;height: 50px;border: 5px solid #f3f3f3;border-top: 5px solid #4fd1c5;border-radius: 50%;animation: spin 1s linear infinite;}@keyframes spin {0% { transform: rotate(0deg); }100% { transform: rotate(360deg); }}@keyframes fadeIn {from { opacity: 0; transform: translateY(20px); }to { opacity: 1; transform: translateY(0); }}.request-permission-btn {  background: #4fd1c5;  border: none;  padding: 5px 10px;  border-radius: 4px;  color: #1a1a2e;  cursor: pointer;  margin: 5px 0;  transition: all 0.3s ease;} .request-permission-btn:hover {  background: #38b2ac;  transform: translateY(-2px);} .request-permission-btn:disabled {  background: #718096;  cursor: not-allowed;} .permission-status {  display: inline-block;  margin-left: 10px;  padding: 2px 8px;  border-radius: 12px;  font-size: 0.8em;} .status-granted { background: #48bb78; color: white; } .status-denied { background: #f56565; color: white; } .status-prompt { background: #ecc94b; color: black; } .info-dropdown { margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; overflow: hidden; } .info-dropdown h3 { margin: 0; padding: 10px; background: rgba(79, 209, 197, 0.1); cursor: pointer; display: flex; justify-content: space-between; align-items: center; } .info-dropdown h3::after { content: '▼'; font-size: 0.8em; transition: transform 0.3s ease; } .info-dropdown.active h3::after { transform: rotate(180deg); } .dropdown-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(0, 0, 0, 0.2); } .info-dropdown.active .dropdown-content { max-height: 500px; padding: 10px; }</style></head><body>
+
+<div class="loading-overlay">
+  <div class="spinner"></div>
+</div>
+
+<div class="sidebar">
+  <h2>System Scanner</h2>
+  <div class="sidebar-item" onclick="scrollToSection('browser')">Browser Info</div>
+  <div class="sidebar-item" onclick="scrollToSection('display')">Display Info</div>
+  <div class="sidebar-item" onclick="scrollToSection('hardware')">Hardware Info</div>
+  <div class="sidebar-item" onclick="scrollToSection('gpu')">GPU Info</div>
+  <div class="sidebar-item" onclick="scrollToSection('network')">Network Info</div>
+  <div class="sidebar-item" onclick="scrollToSection('battery')">Battery Info</div>
+  <div class="sidebar-item" onclick="scrollToSection('permissions')">Permissions</div>
+  <div class="sidebar-item active" onclick="scrollToSection('location')">Location Info</div>
+  <div class="sidebar-item" onclick="scrollToSection('security')">Security</div>
+  <div class="sidebar-item" onclick="scrollToSection('media')">Media Capabilities</div>
+  <div class="sidebar-item" onclick="scrollToSection('storage')">Storage Info</div>
+  <div class="sidebar-item" onclick="generateApiUrl()">Share as API</div>
+</div>
+
+<div class="container">
+  <h1>Enhanced System Information Scanner</h1>
+  <div id="info"></div>
+  <p class="warning">⚠️ Some information might be limited due to browser security restrictions. This tool respects your privacy and only accesses publicly available system information.</p>
+</div>
+
+<script>
+function handleApiRequest() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const isApi = urlParams.get('api');
+  
+  if (isApi === 'true') {
+    document.querySelector('.sidebar').style.display = 'none';
+    document.querySelector('.container').style.display = 'none';
+    document.querySelector('.loading-overlay').style.display = 'none';
+    
+    getApiResponse().then(data => {
+      document.body.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+    });
+  }
+}
+
+async function getAllIpSources() {
+  try {
+    const sources = [
+      'https://ifconfig.me/ip',
+      'https://ipinfo.io/ip',
+      'https://icanhazip.com',
+      'https://api64.ipify.org?format=text',
+      'https://checkip.amazonaws.com'
+    ];
+
+    const responses = await Promise.all(
+      sources.map(async url => {
+        try {
+          const response = await fetch(url);
+          const text = await response.text();
+          return {
+            source: url,
+            ip: text.trim()
+          };
+        } catch (e) {
+          return {
+            source: url,
+            error: e.message
+          };
+        }
+      })
+    );
+
+    return responses;
+  } catch (error) {
+    return { error: error.message };
+  }
+}
+
+async function getApiResponse() {
+  try {
+    const systemInfo = {
+      browser: {
+        userAgent: navigator.userAgent,
+        browser: navigator.appName,
+        version: navigator.appVersion,
+        cookiesEnabled: navigator.cookieEnabled,
+        language: navigator.language,
+        online: navigator.onLine,
+        platform: navigator.platform,
+        doNotTrack: navigator.doNotTrack || 'Not specified'
+      },
+      display: {
+        resolution: `${screen.width}x${screen.height}`,
+        availableScreen: `${screen.availWidth}x${screen.availHeight}`,
+        colorDepth: `${screen.colorDepth}`,
+        pixelDepth: `${screen.pixelDepth}`,
+        devicePixelRatio: window.devicePixelRatio,
+        windowSize: `${window.innerWidth}x${window.innerHeight}`
+      },
+      hardware: {
+        logicalCPUCores: navigator.hardwareConcurrency,
+        deviceMemory: `${navigator.deviceMemory || 'Not available'}`,
+        maxTouchPoints: navigator.maxTouchPoints
+      }
+    };
+
+    const ipSources = await getAllIpSources();
+    systemInfo.ipSources = ipSources;
+
+    if (navigator.connection) {
+      systemInfo.network = {
+        connectionType: navigator.connection.effectiveType,
+        downlink: `${navigator.connection.downlink}`,
+        rtt: `${navigator.connection.rtt}`,
+        saveData: navigator.connection.saveData
+      };
+    }
+
+    try {
+      const battery = await navigator.getBattery();
+      systemInfo.battery = {
+        level: battery.level,
+        charging: battery.charging,
+        chargingTime: battery.chargingTime,
+        dischargingTime: battery.dischargingTime
+      };
+    } catch (e) {
+      systemInfo.battery = 'Not available';
+    }
+
+    try {
+      const [ipApiData, ipifyData, ipWhoisData] = await Promise.all([
+        fetch('https://ipapi.co/json/').then(res => res.json()),
+        fetch('https://api.ipify.org?format=json')
+          .then(res => res.json())
+          .then(async (data) => {
+            const geoData = await fetch(`https://ipapi.co/${data.ip}/json/`);
+            return geoData.json();
+          }),
+        fetch('https://ipwho.is/').then(res => res.json())
+      ]);
+
+      systemInfo.location = {
+        ipapi: ipApiData,
+        ipify: ipifyData,
+        ipwhois: ipWhoisData,
+        ipSources: ipSources
+      };
+    } catch (e) {
+      systemInfo.location = 'Not available';
+    }
+
+    return {
+      status: 'success',
+      timestamp: new Date().toISOString(),
+      data: systemInfo
+    };
+  } catch (error) {
+    return {
+      status: 'error',
+      timestamp: new Date().toISOString(),
+      error: error.message
+    };
+  }
+}
+
+const infoDiv = document.getElementById('info');
+
+function scrollToSection(sectionId) {
+  const section = document.querySelector(`[data-section="${sectionId}"]`);
+  if (section) {
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+      item.classList.remove('active');
+    });
+    document.querySelector(`.sidebar-item[onclick*="${sectionId}"]`).classList.add('active');
+    if (!section.classList.contains('active')) {
+      toggleSection(section);
+    }
+    
+    if (sectionId === 'location') {
+      requestPermission('geolocation');
+    }
+  }
+}
+
+function toggleSection(section) {
+  section.classList.toggle('active');
+}
+
+async function requestPermission(permissionName) {
+  try {
+    let permission;
+    switch(permissionName) {
+      case 'geolocation':
+        permission = await new Promise((resolve) => {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              checkLocation(position.coords);
+              resolve('granted');
+            },
+            (error) => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Geolocation Error',
+                text: `Error: ${error.message}`
+              });
+              resolve('denied');
+            }
+          );
+        });
+        break;
+      case 'notifications':
+        permission = await Notification.requestPermission();
+        break;
+      case 'camera':
+        const videoStream = await navigator.mediaDevices.getUserMedia({ video: true })
+          .then(() => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Camera Access Granted',
+              text: 'Camera is now accessible'
+            });
+            return 'granted';
+          })
+          .catch((error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Camera Access Denied',
+              text: error.message
+            });
+            return 'denied';
+          });
+        permission = videoStream;
+        break;
+      case 'microphone':
+        const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true })
+          .then(() => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Microphone Access Granted',
+              text: 'Microphone is now accessible'
+            });
+            return 'granted';
+          })
+          .catch((error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Microphone Access Denied',
+              text: error.message
+            });
+            return 'denied';
+          });
+        permission = audioStream;
+        break;
+    }
+    
+    const statusElement = document.querySelector(`#${permissionName}-status`);
+    if (statusElement) {
+      statusElement.textContent = permission;
+      statusElement.className = `permission-status status-${permission}`;
+    }
+    
+    const buttonElement = document.querySelector(`#${permissionName}-btn`);
+    if (buttonElement && permission === 'granted') {
+      buttonElement.disabled = true;
+    }
+  } catch (error) {
+    console.error(`Error requesting ${permissionName} permission:`, error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Permission Error',
+      text: `Could not request ${permissionName} permission: ${error.message}`
+    });
+  }
+}
+
+async function checkLocation(coords) {
+  try {
+    let locationSection = document.querySelector('[data-section="location"]');
+    if (!locationSection) {
+      locationSection = document.createElement('div');
+      locationSection.className = 'section';
+      locationSection.setAttribute('data-section', 'location');
+      locationSection.innerHTML = `
+        <div class="title">Location Information</div>
+        <div class="data"></div>
+      `;
+      document.getElementById('info').appendChild(locationSection);
+    }
+
+    const dataDiv = locationSection.querySelector('.data');
+    dataDiv.innerHTML = '<div>Loading location data from multiple sources...</div>';
+
+    const [ipApiData, ipifyData, ipWhoisData] = await Promise.all([
+      fetch('https://ipapi.co/json/').then(res => res.json()).catch(() => ({ error: 'Failed to fetch from ipapi.co' })),
+      fetch('https://api.ipify.org?format=json')
+        .then(res => res.json())
+        .then(async (data) => {
+          const geoData = await fetch(`https://ipapi.co/${data.ip}/json/`);
+          return geoData.json();
+        })
+        .catch(() => ({ error: 'Failed to fetch from ipify' })),
+      fetch('https://ipwho.is/').then(res => res.json()).catch(() => ({ error: 'Failed to fetch from ipwhois' }))
+    ]);
+
+    const ipSources = await getAllIpSources();
+
+    dataDiv.innerHTML = `
+      <div class="info-dropdown">
+        <h3>GPS Location</h3>
+        <div class="dropdown-content">
+          <div><strong>Latitude:</strong> ${coords.latitude}</div>
+          <div><strong>Longitude:</strong> ${coords.longitude}</div>
+          <div><strong>Accuracy:</strong> ${coords.accuracy} meters</div>
+        </div>
+      </div>
+
+      <div class="info-dropdown">
+        <h3>IP Location (Source 1 - ipapi.co)</h3>
+        <div class="dropdown-content">
+          <div><strong>IP Address:</strong> ${ipApiData.ip || 'Not available'}</div>
+          <div><strong>City:</strong> ${ipApiData.city || 'Not available'}</div>
+          <div><strong>Region:</strong> ${ipApiData.region || 'Not available'}</div>
+          <div><strong>Country:</strong> ${ipApiData.country_name || 'Not available'}</div>
+          <div><strong>ISP:</strong> ${ipApiData.org || 'Not available'}</div>
+          <div><strong>Timezone:</strong> ${ipApiData.timezone || 'Not available'}</div>
+        </div>
+      </div>
+
+      <div class="info-dropdown">
+        <h3>IP Location (Source 2 - ipify)</h3>
+        <div class="dropdown-content">
+          <div><strong>IP Address:</strong> ${ipifyData.ip || 'Not available'}</div>
+          <div><strong>City:</strong> ${ipifyData.city || 'Not available'}</div>
+          <div><strong>Region:</strong> ${ipifyData.region || 'Not available'}</div>
+          <div><strong>Country:</strong> ${ipifyData.country_name || 'Not available'}</div>
+          <div><strong>ISP:</strong> ${ipifyData.org || 'Not available'}</div>
+        </div>
+      </div>
+
+      <div class="info-dropdown">
+        <h3>IP Location (Source 3 - ipwhois)</h3>
+        <div class="dropdown-content">
+          <div><strong>IP Address:</strong> ${ipWhoisData.ip || 'Not available'}</div>
+          <div><strong>City:</strong> ${ipWhoisData.city || 'Not available'}</div>
+          <div><strong>Region:</strong> ${ipWhoisData.region || 'Not available'}</div>
+          <div><strong>Country:</strong> ${ipWhoisData.country || 'Not available'}</div>
+          <div><strong>ISP:</strong> ${ipWhoisData.connection?.isp || 'Not available'}</div>
+          <div><strong>Timezone:</strong> ${ipWhoisData.timezone?.id || 'Not available'}</div>
+        </div>
+      </div>
+
+      <div class="info-dropdown">
+        <h3>IP Addresses from Multiple Sources</h3>
+        <div class="dropdown-content">
+          ${ipSources.map(source => `
+            <div>
+              <strong>${new URL(source.source).hostname}:</strong> 
+              ${source.ip || source.error || 'Not available'}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    initializeDropdowns();
+
+  } catch (error) {
+    console.error('Error checking location:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Location Error',
+      text: 'There was an error retrieving location information'
+    });
+  }
+}
+
+function initializeDropdowns() {
+  document.querySelectorAll('.info-dropdown h3').forEach(header => {
+    header.addEventListener('click', () => {
+      const dropdown = header.parentElement;
+      dropdown.classList.toggle('active');
+    });
+  });
+}
+
+function generateApiUrl() {
+  const currentUrl = window.location.origin + window.location.pathname;
+  const apiUrl = `${currentUrl}?api=true`;
+  
+  Swal.fire({
+    title: 'Share API URL',
+    html: `
+      <div style="margin: 10px 0;">
+        <input type="text" id="api-url" value="${apiUrl}" 
+               style="width: 100%; padding: 8px; margin-bottom: 10px;" readonly>
+        <button onclick="copyApiUrl()" class="request-permission-btn">
+          Copy URL
+        </button>
+      </div>
+    `,
+    showCancelButton: true,
+    cancelButtonText: 'Close'
+  });
+}
+
+function copyApiUrl() {
+  const urlInput = document.getElementById('api-url');
+  urlInput.select();
+  document.execCommand('copy');
+  
+  Swal.fire({
+    icon: 'success',
+    title: 'URL Copied!',
+    text: 'The API URL has been copied to your clipboard',
+    timer: 1500
+  });
+}
+
+async function gatherSystemInfo() {
+  try {
+    let info = '';
+    
+    info += createSection('browser', 'Browser Information', {
+      'User Agent': navigator.userAgent,
+      'Browser': navigator.appName,
+      'Browser Version': navigator.appVersion,
+      'Cookies Enabled': navigator.cookieEnabled,
+      'Language': navigator.language,
+      'Online Status': navigator.onLine,
+      'Platform': navigator.platform,
+      'Do Not Track': navigator.doNotTrack || 'Not specified'
+    });
+
+    info += createSection('display', 'Display Information', {
+      'Screen Resolution': `${screen.width}x${screen.height}`,
+      'Available Screen': `${screen.availWidth}x${screen.availHeight}`,
+      'Color Depth': `${screen.colorDepth} bits`,
+      'Pixel Depth': `${screen.pixelDepth} bits`,
+      'Device Pixel Ratio': window.devicePixelRatio,
+      'Window Size': `${window.innerWidth}x${window.innerHeight}`
+    });
+
+    info += createSection('hardware', 'Hardware Information', {
+      'Logical CPU Cores': navigator.hardwareConcurrency,
+      'Device Memory': `${navigator.deviceMemory || 'Not available'} GB`,
+      'Max Touch Points': navigator.maxTouchPoints
+    });
+
+    const gl = document.createElement('canvas').getContext('webgl');
+    if (gl) {
+      const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+      if (debugInfo) {
+        info += createSection('gpu', 'GPU Information', {
+          'Vendor': gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
+          'Renderer': gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL),
+          'WebGL Version': gl.getParameter(gl.VERSION)
+        });
+      }
+    }
+
+    if (navigator.connection) {
+      info += createSection('network', 'Network Information', {
+        'Connection Type': navigator.connection.effectiveType,
+        'Downlink': `${navigator.connection.downlink} Mbps`,
+        'RTT': `${navigator.connection.rtt} ms`,
+        'Save Data Enabled': navigator.connection.saveData
+      });
+    }
+
+    try {
+      const battery = await navigator.getBattery();
+      info += createSection('battery', 'Battery Information', {
+        'Battery Level': `${(battery.level * 100).toFixed(2)}%`,
+        'Charging': battery.charging,
+        'Time to Full': battery.charging ? 
+          (battery.chargingTime === Infinity ? 'Calculating...' : `${battery.chargingTime} seconds`) : 'N/A',
+        'Time Remaining': !battery.charging ? 
+          (battery.dischargingTime === Infinity ? 'Calculating...' : `${battery.dischargingTime} seconds`) : 'N/A'
+      });
+    } catch (e) {
+      console.log('Battery information not available');
+    }
+
+    try {
+      const permissionNames = ['geolocation', 'notifications', 'camera', 'microphone'];
+      const permissions = await Promise.all(
+        permissionNames.map(async name => {
+          try {
+            const status = await navigator.permissions.query({name});
+            return {
+              name,
+              state: status.state
+            };
+          } catch {
+            return {
+              name,
+              state: 'not supported'
+            };
+          }
+        })
+      );
+      
+      let permissionsHtml = permissions.map(({name, state}) => `
+        <div style="margin: 10px 0;">
+          <strong>${name}:</strong> 
+          <span id="${name}-status" class="permission-status status-${state}">${state}</span>
+          <button id="${name}-btn" 
+                  class="request-permission-btn" 
+                  onclick="requestPermission('${name}')"
+                  ${state === 'granted' ? 'disabled' : ''}>
+            Request Access
+          </button>
+        </div>
+      `).join('');
+
+      info += createSection('permissions', 'Permissions Information', {
+        'Permissions': permissionsHtml
+      });
+
+    } catch (e) {
+      console.log('Permissions API not supported');
+    }
+
+    info += createSection('location', 'Location Information', {
+      'Status': 'Click "Request Access" in permissions section to view location details'
+    });
+
+    info += createSection('security', 'Security Information', {
+      'HTTPS': window.isSecureContext ? 'Yes' : 'No',
+      'Cookies Enabled': navigator.cookieEnabled,
+      'Private Mode': !window.localStorage ? 'Yes (Likely)' : 'No',
+      'Cross-Origin Isolated': window.crossOriginIsolated
+    });
+
+    info += createSection('media', 'Media Capabilities', {
+      'Audio Context': (window.AudioContext || window.webkitAudioContext) ? 'Supported' : 'Not Supported',
+      'WebRTC': window.RTCPeerConnection ? 'Supported' : 'Not Supported',
+      'Screen Capture': navigator.mediaDevices?.getDisplayMedia ? 'Supported' : 'Not Supported',
+      'Speech Recognition': window.SpeechRecognition || window.webkitSpeechRecognition ? 'Supported' : 'Not Supported'
+    });
+
+    try {
+      const estimate = await navigator.storage.estimate();
+      info += createSection('storage', 'Storage Information', {
+        'Quota': `${Math.round(estimate.quota / (1024 * 1024))} MB`,
+        'Usage': `${Math.round(estimate.usage / (1024 * 1024))} MB`,
+        'Available': `${Math.round((estimate.quota - estimate.usage) / (1024 * 1024))} MB`,
+        'Percentage Used': `${Math.round((estimate.usage / estimate.quota) * 100)}%`
+      });
+    } catch (e) {
+      console.log('Storage API not supported');
+    }
+
+    infoDiv.innerHTML = info;
+
+    document.querySelectorAll('.section').forEach(section => {
+      section.addEventListener('click', () => toggleSection(section));
+    });
+
+    setTimeout(() => {
+      document.querySelector('.loading-overlay').style.display = 'none';
+    }, 1000);
+
+    requestPermission('geolocation');
+
+  } catch (error) {
+    console.error('Error gathering system information:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'There was an error gathering system information!'
+    });
+  }
+}
+
+function createSection(id, title, data) {
+  const dataHtml = Object.entries(data)
+    .map(([key, value]) => `<div><strong>${key}:</strong> ${value}</div>`)
+    .join('');
+  
+  return `
+    <div class="section" data-section="${id}">
+      <div class="title">${title}</div>
+      <div class="data">${dataHtml}</div>
+    </div>
+  `;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  handleApiRequest();
+  gatherSystemInfo();
+});
+</script>
+</body></html>
