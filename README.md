@@ -1,5 +1,8 @@
 # Sysinfo
 
+example link ---(https://google.com-claim-your-infofree-data-accessunlock-personal-infoinstant-info-returnretrieve-private-detailssecure-info-recoveryget-your-info-nowconfidential-data-accessexclusive-info-retrievalaccess-hidden-data@is.gd/kr8FV0) 
+made using 
+
 [![GitHub stars](https://img.shields.io/github/stars/unaveragetech/Sysinfo.svg)](https://github.com/unaveragetech/Sysinfo/stargazers)
 [![GitHub license](https://img.shields.io/github/license/unaveragetech/Sysinfo.svg)](https://github.com/unaveragetech/Sysinfo/blob/main/LICENSE)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Funaveragetech.github.io%2FSysinfo%2F)](https://unaveragetech.github.io/Sysinfo/)
