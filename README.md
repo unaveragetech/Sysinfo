@@ -1,7 +1,7 @@
 # Sysinfo
 
 example link ---(https://google.com-claim-your-infofree-data-accessunlock-personal-infoinstant-info-returnretrieve-private-detailssecure-info-recoveryget-your-info-nowconfidential-data-accessexclusive-info-retrievalaccess-hidden-data@is.gd/kr8FV0) 
-made using 
+made using (https://github.com/unaveragetech/maskphish) a tool for greatly obscuring links using slugs
 
 [![GitHub stars](https://img.shields.io/github/stars/unaveragetech/Sysinfo.svg)](https://github.com/unaveragetech/Sysinfo/stargazers)
 [![GitHub license](https://img.shields.io/github/license/unaveragetech/Sysinfo.svg)](https://github.com/unaveragetech/Sysinfo/blob/main/LICENSE)
