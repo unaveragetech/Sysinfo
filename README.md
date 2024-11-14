@@ -3,7 +3,9 @@
 Example Link:
 Claim your information now(https://google.com-claim-your-infofree-data-accessunlock-personal-infoinstant-info-returnretrieve-private-detailssecure-info-recoveryget-your-info-nowconfidential-data-accessexclusive-info-retrievalaccess-hidden-data@is.gd/kr8FV0)
 
-This link was created using MaskPhish, a tool designed to significantly obscure URLs by using custom slugs for enhanced security and privacy.
+This link was created using MaskPhish, a tool designed to significantly obscure URLs by using custom slugs for enhanced security and privacy.this links goes to the api 
+
+you can gind maskphish here (https://github.com/unaveragetech/maskphish)
 
 [![GitHub stars](https://img.shields.io/github/stars/unaveragetech/Sysinfo.svg)](https://github.com/unaveragetech/Sysinfo/stargazers)
 [![GitHub license](https://img.shields.io/github/license/unaveragetech/Sysinfo.svg)](https://github.com/unaveragetech/Sysinfo/blob/main/LICENSE)
