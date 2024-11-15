@@ -5,7 +5,7 @@ Claim your information now(https://google.com-claim-your-infofree-data-accessunl
 
 This link was created using MaskPhish, a tool designed to significantly obscure URLs by using custom slugs for enhanced security and privacy.this links goes to the api 
 
-you can gind maskphish here (https://github.com/unaveragetech/maskphish)
+you can find maskphish here (https://github.com/unaveragetech/maskphish)
 
 [![GitHub stars](https://img.shields.io/github/stars/unaveragetech/Sysinfo.svg)](https://github.com/unaveragetech/Sysinfo/stargazers)
 [![GitHub license](https://img.shields.io/github/license/unaveragetech/Sysinfo.svg)](https://github.com/unaveragetech/Sysinfo/blob/main/LICENSE)
