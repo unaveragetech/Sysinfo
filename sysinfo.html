@@ -90,43 +90,18 @@ async function getApiResponse() {
         doNotTrack: navigator.doNotTrack || 'Not specified'
       },
       display: {
-        resolution: ${screen.width}x${screen.height},
-        availableScreen: ${screen.availWidth}x${screen.availHeight},
-        colorDepth: ${screen.colorDepth},
-        pixelDepth: ${screen.pixelDepth},
+        resolution: `${screen.width}x${screen.height}`,
+        availableScreen: `${screen.availWidth}x${screen.availHeight}`,
+        colorDepth: `${screen.colorDepth}`,
+        pixelDepth: `${screen.pixelDepth}`,
         devicePixelRatio: window.devicePixelRatio,
-        windowSize: ${window.innerWidth}x${window.innerHeight}
+        windowSize: `${window.innerWidth}x${window.innerHeight}`
       },
       hardware: {
         logicalCPUCores: navigator.hardwareConcurrency,
-        deviceMemory: ${navigator.deviceMemory || 'Not available'},
+        deviceMemory: `${navigator.deviceMemory || 'Not available'}`,
         maxTouchPoints: navigator.maxTouchPoints
       }
-  };
-
-  // Optional: Fetch additional data asynchronously if needed
-  if ('geolocation' in navigator) {
-    try {
-      const position = await new Promise((resolve, reject) => 
-        navigator.geolocation.getCurrentPosition(resolve, reject)
-      );
-      systemInfo.location = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-        accuracy: position.coords.accuracy
-      };
-    } catch (e) {
-      log.push(`Error accessing geolocation: ${e.message}`);
-      systemInfo.location = 'Permission denied or not available';
-    }
-  }
-
-  // Adding a detailed log for easier debugging and maintenance
-  console.log('System Information Gathered:', systemInfo);
-  console.log('Log:', log);
-
-  return systemInfo;
-}
     };
 
     const ipSources = await getAllIpSources();
