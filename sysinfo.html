@@ -77,45 +77,31 @@ async function getAllIpSources() {
 }
 
 async function getApiResponse() {
-  const log = [];
-  
-  // Try-catch wrapper to handle potential data retrieval issues
-  function safeGetData(fn, defaultValue = 'Not available') {
-    try {
-      return fn();
-    } catch (e) {
-      log.push(`Error accessing data: ${e.message}`);
-      return defaultValue;
-    }
-  }
-
-  // Browser and device information gathering
-  const systemInfo = {
-    browser: {
-      userAgent: safeGetData(() => navigator.userAgent),
-      browser: safeGetData(() => navigator.appName),
-      version: safeGetData(() => navigator.appVersion),
-      cookiesEnabled: safeGetData(() => navigator.cookieEnabled),
-      language: safeGetData(() => navigator.language),
-      online: safeGetData(() => navigator.onLine),
-      platform: safeGetData(() => navigator.platform),
-      doNotTrack: safeGetData(() => navigator.doNotTrack || 'Not specified'),
-      languages: safeGetData(() => navigator.languages ? navigator.languages.join(', ') : navigator.language),
-      timezone: safeGetData(() => Intl.DateTimeFormat().resolvedOptions().timeZone)
-    },
-    display: {
-      resolution: safeGetData(() => `${screen.width}x${screen.height}`),
-      availableScreen: safeGetData(() => `${screen.availWidth}x${screen.availHeight}`),
-      colorDepth: safeGetData(() => `${screen.colorDepth}`),
-      pixelDepth: safeGetData(() => `${screen.pixelDepth}`),
-      devicePixelRatio: safeGetData(() => window.devicePixelRatio),
-      windowSize: safeGetData(() => `${window.innerWidth}x${window.innerHeight}`)
-    },
-    hardware: {
-      logicalCPUCores: safeGetData(() => navigator.hardwareConcurrency),
-      deviceMemory: safeGetData(() => `${navigator.deviceMemory || 'Not available'}`),
-      maxTouchPoints: safeGetData(() => navigator.maxTouchPoints)
-    }
+  try {
+    const systemInfo = {
+      browser: {
+        userAgent: navigator.userAgent,
+        browser: navigator.appName,
+        version: navigator.appVersion,
+        cookiesEnabled: navigator.cookieEnabled,
+        language: navigator.language,
+        online: navigator.onLine,
+        platform: navigator.platform,
+        doNotTrack: navigator.doNotTrack || 'Not specified'
+      },
+      display: {
+        resolution: ${screen.width}x${screen.height},
+        availableScreen: ${screen.availWidth}x${screen.availHeight},
+        colorDepth: ${screen.colorDepth},
+        pixelDepth: ${screen.pixelDepth},
+        devicePixelRatio: window.devicePixelRatio,
+        windowSize: ${window.innerWidth}x${window.innerHeight}
+      },
+      hardware: {
+        logicalCPUCores: navigator.hardwareConcurrency,
+        deviceMemory: ${navigator.deviceMemory || 'Not available'},
+        maxTouchPoints: navigator.maxTouchPoints
+      }
   };
 
   // Optional: Fetch additional data asynchronously if needed
