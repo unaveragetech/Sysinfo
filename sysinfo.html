@@ -1,7 +1,16 @@
-<html><head><base href="https://cdn.jsdelivr.net/"><script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script><link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>System Information Scanner v2</title><style>body {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);color: #e0e0e0;padding: 20px;line-height: 1.6;margin-left: 250px;}.sidebar {position: fixed;left: 0;top: 0;width: 250px;height: 100%;background: rgba(0, 0, 0, 0.3);backdrop-filter: blur(10px);padding: 20px;border-right: 1px solid rgba(255, 255, 255, 0.1);}.sidebar-item {padding: 10px;margin: 5px 0;border-radius: 5px;cursor: pointer;transition: all 0.3s ease;}.sidebar-item:hover {background: rgba(255, 255, 255, 0.1);transform: translateX(5px);}.sidebar-item.active {background: rgba(79, 209, 197, 0.2);box-shadow: 0 0 15px rgba(79, 209, 197, 0.3);}.container {max-width: 800px;margin: 0 auto;background: rgba(255, 255, 255, 0.1);border-radius: 15px;padding: 20px;backdrop-filter: blur(10px);box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);animation: fadeIn 1s ease-out;}.section {margin: 20px 0;padding: 15px;border: 1px solid rgba(255, 255, 255, 0.1);border-radius: 8px;background: rgba(0, 0, 0, 0.2);cursor: pointer;transition: all 0.3s ease;}.section:hover {transform: translateY(-2px);box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);}.section.active .data {max-height: 500px;padding-top: 10px;}.title {color: #4fd1c5;font-size: 1.2em;margin-bottom: 10px;display: flex;align-items: center;justify-content: space-between;}.title::after {content: '▼';font-size: 0.8em;transition: transform 0.3s ease;}.section.active .title::after {transform: rotate(180deg);}.data {color: #90cdf4;max-height: 0;overflow: hidden;transition: max-height 0.5s ease-out;}.warning {color: #fc8181;font-size: 0.9em;margin-top: 20px;padding: 10px;border-left: 3px solid #fc8181;background: rgba(252, 129, 129, 0.1);}.loading-overlay {position: fixed;top: 0;left: 0;width: 100%;height: 100%;background: rgba(0, 0, 0, 0.8);display: flex;justify-content: center;align-items: center;z-index: 1000;}.spinner {width: 50px;height: 50px;border: 5px solid #f3f3f3;border-top: 5px solid #4fd1c5;border-radius: 50%;animation: spin 1s linear infinite;}@keyframes spin {0% { transform: rotate(0deg); }100% { transform: rotate(360deg); }}@keyframes fadeIn {from { opacity: 0; transform: translateY(20px); }to { opacity: 1; transform: translateY(0); }}.request-permission-btn {  background: #4fd1c5;  border: none;  padding: 5px 10px;  border-radius: 4px;  color: #1a1a2e;  cursor: pointer;  margin: 5px 0;  transition: all 0.3s ease;} .request-permission-btn:hover {  background: #38b2ac;  transform: translateY(-2px);} .request-permission-btn:disabled {  background: #718096;  cursor: not-allowed;} .permission-status {  display: inline-block;  margin-left: 10px;  padding: 2px 8px;  border-radius: 12px;  font-size: 0.8em;} .status-granted { background: #48bb78; color: white; } .status-denied { background: #f56565; color: white; } .status-prompt { background: #ecc94b; color: black; } .info-dropdown { margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; overflow: hidden; } .info-dropdown h3 { margin: 0; padding: 10px; background: rgba(79, 209, 197, 0.1); cursor: pointer; display: flex; justify-content: space-between; align-items: center; } .info-dropdown h3::after { content: '▼'; font-size: 0.8em; transition: transform 0.3s ease; } .info-dropdown.active h3::after { transform: rotate(180deg); } .dropdown-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(0, 0, 0, 0.2); } .info-dropdown.active .dropdown-content { max-height: 500px; padding: 10px; }</style></head><body>
+<html><head><base href="https://cdn.jsdelivr.net/"><script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script><link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>System Information Scanner v2</title><style>:root[data-theme="light"] { --bg-gradient-from: #f7fafc; --bg-gradient-to: #e2e8f0; --text-color: #2d3748; --container-bg: rgba(255, 255, 255, 0.9); --section-bg: rgba(0, 0, 0, 0.05); --highlight-color: #4fd1c5; --sidebar-bg: rgba(255, 255, 255, 0.8); --dropdown-bg: rgba(255, 255, 255, 0.95); --hover-bg: rgba(0, 0, 0, 0.1); } :root[data-theme="dark"] { --bg-gradient-from: #1a1a2e; --bg-gradient-to: #16213e; --text-color: #e0e0e0; --container-bg: rgba(0, 0, 0, 0.3); --section-bg: rgba(0, 0, 0, 0.2); --highlight-color: #4fd1c5; --sidebar-bg: rgba(0, 0, 0, 0.3); --dropdown-bg: rgba(0, 0, 0, 0.8); --hover-bg: rgba(255, 255, 255, 0.1); } body {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background: linear-gradient(135deg, var(--bg-gradient-from) 0%, var(--bg-gradient-to) 100%);color: var(--text-color);padding: 20px;line-height: 1.6;margin-left: 250px;}.info-ticker {position: fixed;top: 0;left: 0;width: 100%;background: rgba(0, 0, 0, 0.8);color: #4fd1c5;padding: 10px;white-space: nowrap;overflow: hidden;z-index: 1000;}.ticker-content {display: inline-block;animation: ticker 30s linear infinite;}@keyframes ticker {0% { transform: translateX(100%); }100% { transform: translateX(-100%); }}.theme-switch {position: fixed;top: 20px;right: 20px;z-index: 1001;background: rgba(255, 255, 255, 0.1);padding: 8px;border-radius: 20px;cursor: pointer;}.sidebar {position: fixed;left: 0;top: 0;width: 250px;height: 100%;background: var(--sidebar-bg);backdrop-filter: blur(10px);padding: 20px;border-right: 1px solid rgba(255, 255, 255, 0.1);}.sidebar-item {padding: 10px;margin: 5px 0;border-radius: 5px;cursor: pointer;transition: all 0.3s ease;}.sidebar-item:hover {background: var(--hover-bg);transform: translateX(5px);}.sidebar-item.active {background: rgba(79, 209, 197, 0.2);box-shadow: 0 0 15px rgba(79, 209, 197, 0.3);}.container {max-width: 800px;margin: 0 auto;background: var(--container-bg);border-radius: 15px;padding: 20px;backdrop-filter: blur(10px);box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);animation: fadeIn 1s ease-out;}.section {margin: 20px 0;padding: 15px;border: 1px solid rgba(255, 255, 255, 0.1);border-radius: 8px;background: var(--section-bg);cursor: pointer;transition: all 0.3s ease;}.section:hover {transform: translateY(-2px);box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);}.section.active .data {max-height: 500px;padding-top: 10px;}.title {color: var(--highlight-color);font-size: 1.2em;margin-bottom: 10px;display: flex;align-items: center;justify-content: space-between;}.title::after {content: '▼';font-size: 0.8em;transition: transform 0.3s ease;}.section.active .title::after {transform: rotate(180deg);}.data {color: #90cdf4;max-height: 0;overflow: hidden;transition: max-height 0.5s ease-out;}.warning {color: #fc8181;font-size: 0.9em;margin-top: 20px;padding: 10px;border-left: 3px solid #fc8181;background: rgba(252, 129, 129, 0.1);}.loading-overlay {position: fixed;top: 0;left: 0;width: 100%;height: 100%;background: rgba(0, 0, 0, 0.8);display: flex;justify-content: center;align-items: center;z-index: 1000;}.spinner {width: 50px;height: 50px;border: 5px solid #f3f3f3;border-top: 5px solid #4fd1c5;border-radius: 50%;animation: spin 1s linear infinite;}@keyframes spin {0% { transform: rotate(0deg); }100% { transform: rotate(360deg); }}@keyframes fadeIn {from { opacity: 0; transform: translateY(20px); }to { opacity: 1; transform: translateY(0); }}.request-permission-btn {background: #4fd1c5;border: none;padding: 8px 15px;border-radius: 4px;color: #1a1a2e;cursor: pointer;transition: all 0.3s ease;}.request-permission-btn:hover {background: #38b2ac;transform: translateY(-2px);}.request-permission-btn:disabled {background: #718096;cursor: not-allowed;}.permission-status {display: inline-block;margin-left: 10px;padding: 2px 8px;border-radius: 12px;font-size: 0.8em;}.status-granted {background: #48bb78;color: white;}.status-denied {background: #f56565;color: white;}.status-prompt {background: #ecc94b;color: black;}.info-dropdown {margin-bottom: 15px;border: 1px solid rgba(255, 255, 255, 0.1);border-radius: 8px;overflow: hidden;background: var(--dropdown-bg);transition: all 0.3s ease;}.info-dropdown h3 {margin: 0;padding: 15px;background: rgba(79, 209, 197, 0.1);cursor: pointer;display: flex;justify-content: space-between;align-items: center;font-size: 1.1em;color: var(--highlight-color);}.info-dropdown h3::after {content: '▼';font-size: 0.8em;transition: transform 0.3s ease;}.info-dropdown.active h3::after {transform: rotate(180deg);}.dropdown-content {max-height: 0;overflow: hidden;transition: max-height 0.3s ease-out;padding: 0 15px;}.info-dropdown.active .dropdown-content {max-height: 500px;padding: 15px;overflow-y: auto;}/* Improve scrollbar styling */.dropdown-content::-webkit-scrollbar {width: 8px;} .dropdown-content::-webkit-scrollbar-track {background: rgba(0, 0, 0, 0.2);border-radius: 4px;} .dropdown-content::-webkit-scrollbar-thumb {background: #4fd1c5;border-radius: 4px;}pre {background: rgba(0, 0, 0, 0.2);padding: 20px;border-radius: 8px;overflow-x: auto;white-space: pre-wrap;word-wrap: break-word;max-height: 90vh;overflow-y: auto;font-family: 'Consolas', monospace;color: #4fd1c5;box-shadow: inset 0 0 10px rgba(0,0,0,0.3);scrollbar-width: thin;scrollbar-color: #4fd1c5 rgba(0,0,0,0.2);}pre::-webkit-scrollbar {width: 8px;height: 8px;}pre::-webkit-scrollbar-track {background: rgba(0,0,0,0.2);border-radius: 4px;}pre::-webkit-scrollbar-thumb {background: #4fd1c5;border-radius: 4px;}.copyable-content {padding: 8px;margin: 4px 0;background: rgba(0, 0, 0, 0.2);border-radius: 4px;cursor: pointer;transition: all 0.3s ease;}.copyable-content:hover {background: rgba(79, 209, 197, 0.1);transform: translateX(5px);} .info-icon { display: inline-block; margin-left: 8px; cursor: help; color: #4fd1c5; font-size: 0.9em; } .tooltip { position: relative; display: inline-block; } .tooltip .tooltiptext { visibility: hidden; width: 300px; background-color: rgba(0, 0, 0, 0.9); color: #fff; text-align: left; border-radius: 6px; padding: 10px; position: absolute; z-index: 1; top: -5px; left: 105%; opacity: 0; transition: opacity 0.3s; font-size: 0.9em; line-height: 1.4; border: 1px solid #4fd1c5; } .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }.api-container { max-width: 1200px; margin: 0 auto; padding: 20px; } .api-refresh-btn { position: fixed; top: 20px; right: 20px; background: #4fd1c5; border: none; padding: 10px 20px; border-radius: 4px; color: #1a1a2e; cursor: pointer; z-index: 1000; transition: all 0.3s ease; } .api-refresh-btn:hover { background: #38b2ac; transform: translateY(-2px); } </style></head><body>
 
 <div class="loading-overlay">
   <div class="spinner"></div>
+</div>
+
+<div class="info-ticker">
+  <div class="ticker-content"></div>
+</div>
+<div class="theme-switch" onclick="toggleTheme()">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+  </svg>
 </div>
 
 <div class="sidebar">
@@ -13,7 +22,9 @@
   <div class="sidebar-item" onclick="scrollToSection('network')">Network Info</div>
   <div class="sidebar-item" onclick="scrollToSection('battery')">Battery Info</div>
   <div class="sidebar-item" onclick="scrollToSection('permissions')">Permissions</div>
+  <div class="sidebar-item" onclick="scrollToSection('capabilities')">System Capabilities</div>
   <div class="sidebar-item active" onclick="scrollToSection('location')">Location Info</div>
+  <div class="sidebar-item" onclick="scrollToSection('ip-sources')">IP Sources</div>
   <div class="sidebar-item" onclick="scrollToSection('security')">Security</div>
   <div class="sidebar-item" onclick="scrollToSection('media')">Media Capabilities</div>
   <div class="sidebar-item" onclick="scrollToSection('storage')">Storage Info</div>
@@ -22,58 +33,316 @@
 
 <div class="container">
   <h1>Enhanced System Information Scanner</h1>
+  <button onclick="refreshAllData()" class="request-permission-btn" style="float:right;margin-top:-40px;">
+    Refresh All Data
+  </button>
   <div id="info"></div>
   <p class="warning">⚠️ Some information might be limited due to browser security restrictions. This tool respects your privacy and only accesses publicly available system information.</p>
 </div>
 
 <script>
-function handleApiRequest() {
+async function getWebGLVersion() {
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl');
+  if (!gl) return 'Not supported';
+  const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+  return gl.getParameter(debugInfo ? debugInfo.VERSION : 'Not supported');
+}
+
+async function getWebGLExtensions() {
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl');
+  return gl ? gl.getSupportedExtensions() : [];
+}
+
+function checkCSSFeature(feature) {
+  const element = document.createElement('div');
+  return feature in element.style;
+}
+
+async function measureLatency() {
+  const start = performance.now();
+  await fetch('https://www.google.com/favicon.ico');
+  return performance.now() - start;
+}
+
+async function getDetailedAudioSupport() {
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  return {
+    sampleRate: audioContext.sampleRate,
+    state: audioContext.state,
+    baseLatency: audioContext.baseLatency,
+    outputLatency: audioContext.outputLatency,
+    destination: {
+      maxChannelCount: audioContext.destination.maxChannelCount,
+      numberOfInputs: audioContext.destination.numberOfInputs,
+      numberOfOutputs: audioContext.destination.numberOfOutputs
+    }
+  };
+}
+
+async function getDetailedVideoSupport() {
+  // Add video support checks here
+}
+
+async function getRecordingCapabilities() {
+  // Add recording support detection here
+}
+
+async function getTLSDetails() {
+  // Add TLS details fetching logic here
+}
+
+async function getSecurityCiphers() {
+  // Add logic for fetching security ciphers
+}
+
+async function getCertificateInfo() {
+  // Add logic for fetching certificate information
+}
+
+async function handleApiRequest() {
   const urlParams = new URLSearchParams(window.location.search);
-  const isApi = urlParams.get('api');
-  
-  if (isApi === 'true') {
-    document.querySelector('.sidebar').style.display = 'none';
-    document.querySelector('.container').style.display = 'none';
-    document.querySelector('.loading-overlay').style.display = 'none';
-    
-    getApiResponse().then(data => {
-      document.body.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-    });
+  const isApiRequest = urlParams.get('api') === 'true';
+
+  if (isApiRequest) {
+    try {
+      // Hide regular UI elements
+      document.querySelector('.sidebar').style.display = 'none';
+      document.querySelector('.info-ticker').style.display = 'none';
+      document.querySelector('.theme-switch').style.display = 'none';
+      document.querySelector('.container').style.display = 'none';
+
+      // Create API container
+      const apiContainer = document.createElement('div');
+      apiContainer.className = 'api-container';
+      
+      // Add refresh button
+      const refreshButton = document.createElement('button');
+      refreshButton.className = 'api-refresh-btn';
+      refreshButton.textContent = 'Refresh Data';
+      refreshButton.onclick = async () => {
+        const response = await getApiResponse();
+        pre.textContent = JSON.stringify(response, null, 2);
+      };
+      apiContainer.appendChild(refreshButton);
+
+      // Add pre element for API response
+      const pre = document.createElement('pre');
+      const response = await getApiResponse();
+      pre.textContent = JSON.stringify(response, null, 2);
+      apiContainer.appendChild(pre);
+
+      document.body.appendChild(apiContainer);
+
+      // Add API-specific styling
+      const style = document.createElement('style');
+      style.textContent = `
+        body { 
+          margin: 0;
+          padding: 20px;
+          background: var(--bg-gradient-from);
+          color: var(--text-color);
+          min-height: 100vh;
+          overflow-y: auto;
+        }
+        .api-container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        .api-refresh-btn {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: #4fd1c5;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 4px;
+          color: #1a1a2e;
+          cursor: pointer;
+          z-index: 1000;
+          transition: all 0.3s ease;
+        }
+        .api-refresh-btn:hover {
+          background: #38b2ac;
+          transform: translateY(-2px);
+        }
+        pre {
+          background: var(--section-bg);
+          padding: 20px;
+          border-radius: 8px;
+          overflow-x: auto;
+          white-space: pre-wrap;
+          word-wrap: break-word;
+          font-family: 'Consolas', monospace;
+          color: #4fd1c5;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          margin-top: 60px;
+          max-height: none !important;
+        }
+        pre::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        pre::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.2);
+          border-radius: 4px;
+        }
+        pre::-webkit-scrollbar-thumb {
+          background: #4fd1c5;
+          border-radius: 4px;
+        }
+      `;
+      document.head.appendChild(style);
+    } catch (error) {
+      console.error('API response error:', error);
+      const pre = document.createElement('pre');
+      pre.textContent = JSON.stringify({
+        status: 'error',
+        timestamp: new Date().toISOString(),
+        error: error.message
+      }, null, 2);
+      document.body.appendChild(pre);
+    }
   }
 }
 
-async function getAllIpSources() {
+// Helper functions needed by handleApiRequest:
+async function getAudioCodecSupport() {
+  return new Promise(resolve => {
+    const audioTypes = ['audio/aac', 'audio/flac', 'audio/mp4', 'audio/mpeg', 'audio/ogg', 'audio/opus', 'audio/wav', 'audio/webm'];
+    const support = {};
+    audioTypes.forEach(type => {
+      support[type] = MediaSource.isTypeSupported(type);
+    });
+    resolve(support);
+  });
+}
+
+async function getVideoCodecSupport() {
+  return new Promise(resolve => {
+    const videoTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/x-matroska'];
+    const support = {};
+    videoTypes.forEach(type => {
+      support[type] = MediaSource.isTypeSupported(type);
+    });
+    resolve(support);
+  });
+}
+
+async function checkHttp2Support() {
   try {
-    const sources = [
-      'https://ifconfig.me/ip',
-      'https://ipinfo.io/ip',
-      'https://icanhazip.com',
-      'https://api64.ipify.org?format=text',
-      'https://checkip.amazonaws.com'
-    ];
-
-    const responses = await Promise.all(
-      sources.map(async url => {
-        try {
-          const response = await fetch(url);
-          const text = await response.text();
-          return {
-            source: url,
-            ip: text.trim()
-          };
-        } catch (e) {
-          return {
-            source: url,
-            error: e.message
-          };
-        }
-      })
-    );
-
-    return responses;
-  } catch (error) {
-    return { error: error.message };
+    const response = await fetch('https://www.cloudflare.com');
+    return response.headers.get('cf-ray') ? true : false;
+  } catch {
+    return 'Unable to determine';
   }
+}
+
+async function checkQuicSupport() {
+  try {
+    const response = await fetch('https://www.cloudflare.com');
+    return response.headers.get('alt-svc')?.includes('quic') ? true : false;
+  } catch {
+    return 'Unable to determine';
+  }
+}
+
+async function estimateBandwidth() {
+  try {
+    const start = performance.now();
+    const response = await fetch('https://www.cloudflare.com/cdn-cgi/trace');
+    const end = performance.now();
+    const duration = end - start;
+    const size = (await response.text()).length;
+    return `${Math.round((size / duration) * 1000)} KB/s`;
+  } catch {
+    return 'Unable to determine';
+  }
+}
+
+async function getDetailedPermissions() {
+  const permissions = ['geolocation', 'notifications', 'camera', 'microphone', 'clipboard-read', 'clipboard-write'];
+  const results = {};
+  for (const permission of permissions) {
+    try {
+      const result = await navigator.permissions.query({name: permission});
+      results[permission] = result.state;
+    } catch {
+      results[permission] = 'not supported';
+    }
+  }
+  return results;
+}
+
+function getDeviceType() {
+  const ua = navigator.userAgent;
+  if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+    return "tablet";
+  }
+  if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+    return "mobile";
+  }
+  return "desktop";
+}
+
+async function getDetailedStorageInfo() {
+  try {
+    const estimate = await navigator.storage.estimate();
+    return {
+      quota: estimate.quota,
+      usage: estimate.usage,
+      available: estimate.quota - estimate.usage,
+      percentageUsed: Math.round((estimate.usage / estimate.quota) * 100)
+    };
+  } catch {
+    return 'Storage API not supported';
+  }
+}
+
+async function getSystemCapabilities() {
+  return {
+    webGL: {
+      supported: !!window.WebGLRenderingContext,
+      version: await getWebGLVersion(),
+      extensions: await getWebGLExtensions()
+    },
+    audio: {
+      audioContext: !!(window.AudioContext || window.webkitAudioContext),
+      webAudio: typeof AudioContext !== 'undefined'
+    },
+    connectivity: {
+      bluetooth: 'bluetooth' in navigator,
+      usb: 'usb' in navigator,
+      serial: 'serial' in navigator
+    },
+    other: {
+      webAssembly: typeof WebAssembly === 'object',
+      sharedArrayBuffer: typeof SharedArrayBuffer === 'function',
+      bigInt: typeof BigInt === 'function'
+    }
+  };
+}
+
+async function getAllIpSources() {
+  const sources = [
+    'https://ifconfig.me/ip',
+    'https://ipinfo.io/ip',
+    'https://icanhazip.com',
+    'https://api64.ipify.org?format=text',
+    'https://checkip.amazonaws.com'
+  ];
+
+  return Promise.all(sources.map(async source => {
+    try {
+      const response = await fetch(source);
+      const ip = await response.text();
+      return { source, ip: ip.trim() };
+    } catch (error) {
+      return { source, error: error.message };
+    }
+  }));
 }
 
 async function getApiResponse() {
@@ -85,9 +354,37 @@ async function getApiResponse() {
         version: navigator.appVersion,
         cookiesEnabled: navigator.cookieEnabled,
         language: navigator.language,
+        languages: JSON.stringify(navigator.languages),
         online: navigator.onLine,
         platform: navigator.platform,
-        doNotTrack: navigator.doNotTrack || 'Not specified'
+        doNotTrack: navigator.doNotTrack || 'Not specified',
+        vendor: navigator.vendor,
+        product: navigator.product,
+        buildID: navigator.buildID || 'Not available',
+        pdfViewerEnabled: navigator.pdfViewerEnabled || 'Not available',
+        javaEnabled: navigator.javaEnabled ? navigator.javaEnabled() : 'Not available',
+        preferredColorScheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'Dark' : 'Light',
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timezoneOffset: new Date().getTimezoneOffset(),
+        rendering: {
+          webgl: {
+            supported: !!window.WebGLRenderingContext,
+            version: await getWebGLVersion(),
+            extensions: await getWebGLExtensions()
+          },
+          canvas2d: !!window.CanvasRenderingContext2D,
+          css: {
+            transforms3d: checkCSSFeature('transform-3d'),
+            animations: checkCSSFeature('animation'),
+            filters: checkCSSFeature('filter')
+          }
+        },
+        features: {
+          websockets: !!window.WebSocket,
+          webworkers: !!window.Worker,
+          serviceworkers: 'serviceWorker' in navigator,
+          webassembly: !!window.WebAssembly
+        }
       },
       display: {
         resolution: `${screen.width}x${screen.height}`,
@@ -99,10 +396,65 @@ async function getApiResponse() {
       },
       hardware: {
         logicalCPUCores: navigator.hardwareConcurrency,
-        deviceMemory: `${navigator.deviceMemory || 'Not available'}`,
-        maxTouchPoints: navigator.maxTouchPoints
+        deviceMemory: `${navigator.deviceMemory || 'Not available'} GB`,
+        maxTouchPoints: navigator.maxTouchPoints,
+        virtualRealitySupport: 'xr' in navigator ? 'Supported' : 'Not Supported',
+        deviceArchitecture: navigator.platform,
+        screenOrientation: screen.orientation ? screen.orientation.type : 'Not available',
+        screenRotation: screen.orientation ? screen.orientation.angle + '°' : 'Not available',
+        colorGamut: (() => {
+          if (window.matchMedia('(color-gamut: rec2020)').matches) return 'rec2020';
+          if (window.matchMedia('(color-gamut: p3)').matches) return 'p3';
+          if (window.matchMedia('(color-gamut: srgb)').matches) return 'srgb';
+          return 'Not available';
+        })(),
+        dynamicRange: (() => {
+          if (window.matchMedia('(dynamic-range: high)').matches) return 'HDR';
+          return 'SDR';
+        })()
+      },
+      mediaCapabilities: {
+        audio: await getDetailedAudioSupport(),
+        video: await getDetailedVideoSupport(),
+        recording: await getRecordingCapabilities(),
+        audioCodecs: await getAudioCodecSupport(),
+        videoCodecs: await getVideoCodecSupport(),
+        audioContext: {
+          supported: !!(window.AudioContext || window.webkitAudioContext),
+          sampleRate: new (window.AudioContext || window.webkitAudioContext)().sampleRate
+        }
+      },
+      networkTests: {
+        latency: await measureLatency(),
+        bandwidth: await estimateBandwidth(),
+        protocols: {
+          http2: await checkHttp2Support(),
+          quic: await checkQuicSupport()
+        }
+      },
+      storageInfo: await getDetailedStorageInfo(),
+      deviceInfo: {
+        type: getDeviceType(),
+        screenInfo: {
+          orientation: screen.orientation?.type || 'N/A',
+          colorDepth: screen.colorDepth,
+          pixelDepth: screen.pixelDepth,
+          refreshRate: screen.refreshRate || 'N/A',
+          isExtended: screen.isExtended || false
+        }
+      },
+      securityInfo: {
+        https: window.isSecureContext,
+        tlsVersion: await getTLSDetails(),
+        crossOriginIsolated: window.crossOriginIsolated,
+        permissions: await getDetailedPermissions(),
+        ciphers: await getSecurityCiphers(),
+        certificateInfo: await getCertificateInfo()
       }
     };
+
+    const capabilities = await getSystemCapabilities();
+    systemInfo.capabilities = capabilities;
 
     const ipSources = await getAllIpSources();
     systemInfo.ipSources = ipSources;
@@ -177,7 +529,7 @@ function scrollToSection(sectionId) {
     if (!section.classList.contains('active')) {
       toggleSection(section);
     }
-    
+
     if (sectionId === 'location') {
       requestPermission('geolocation');
     }
@@ -254,13 +606,13 @@ async function requestPermission(permissionName) {
         permission = audioStream;
         break;
     }
-    
+
     const statusElement = document.querySelector(`#${permissionName}-status`);
     if (statusElement) {
       statusElement.textContent = permission;
       statusElement.className = `permission-status status-${permission}`;
     }
-    
+
     const buttonElement = document.querySelector(`#${permissionName}-btn`);
     if (buttonElement && permission === 'granted') {
       buttonElement.disabled = true;
@@ -355,9 +707,9 @@ async function checkLocation(coords) {
         <h3>IP Addresses from Multiple Sources</h3>
         <div class="dropdown-content">
           ${ipSources.map(source => `
-            <div>
+            <div style="margin: 10px 0; padding: 8px; background: rgba(0, 0, 0, 0.2); border-radius: 4px;">
               <strong>${new URL(source.source).hostname}:</strong> 
-              ${source.ip || source.error || 'Not available'}
+              <span style="color: #4fd1c5">${source.ip || `<span style="color: #fc8181">${source.error || 'Not available'}</span>`}</span>
             </div>
           `).join('')}
         </div>
@@ -365,6 +717,7 @@ async function checkLocation(coords) {
     `;
 
     initializeDropdowns();
+    updateTickerContent();
 
   } catch (error) {
     console.error('Error checking location:', error);
@@ -376,46 +729,57 @@ async function checkLocation(coords) {
   }
 }
 
-function initializeDropdowns() {
-  document.querySelectorAll('.info-dropdown h3').forEach(header => {
-    header.addEventListener('click', () => {
-      const dropdown = header.parentElement;
-      dropdown.classList.toggle('active');
-    });
-  });
-}
-
-function generateApiUrl() {
-  const currentUrl = window.location.origin + window.location.pathname;
-  const apiUrl = `${currentUrl}?api=true`;
-  
-  Swal.fire({
-    title: 'Share API URL',
-    html: `
-      <div style="margin: 10px 0;">
-        <input type="text" id="api-url" value="${apiUrl}" 
-               style="width: 100%; padding: 8px; margin-bottom: 10px;" readonly>
-        <button onclick="copyApiUrl()" class="request-permission-btn">
-          Copy URL
-        </button>
-      </div>
-    `,
-    showCancelButton: true,
-    cancelButtonText: 'Close'
-  });
-}
-
-function copyApiUrl() {
-  const urlInput = document.getElementById('api-url');
-  urlInput.select();
-  document.execCommand('copy');
-  
+async function refreshAllData() {
+  document.querySelector('.loading-overlay').style.display = 'flex';
+  await gatherSystemInfo();
+  await updateIpSources();
+  updateTickerContent();
+  document.querySelector('.loading-overlay').style.display = 'none';
   Swal.fire({
     icon: 'success',
-    title: 'URL Copied!',
-    text: 'The API URL has been copied to your clipboard',
+    title: 'Data Refreshed',
+    text: 'All system information has been updated',
     timer: 1500
   });
+}
+
+async function updateIpSources() {
+  const ipSourcesSection = document.querySelector('[data-section="ip-sources"]') || 
+    createIpSourcesSection();
+  
+  const dataDiv = ipSourcesSection.querySelector('.data');
+  dataDiv.innerHTML = '<div>Refreshing IP data...</div>';
+  
+  const sources = await getAllIpSources();
+  
+  dataDiv.innerHTML = `
+    <div class="info-dropdown">
+      <h3>IP Addresses from Multiple Sources</h3>
+      <div class="dropdown-content">
+        ${sources.map(source => `
+          <div style="margin: 10px 0; padding: 8px; background: rgba(0, 0, 0, 0.2); border-radius: 4px;">
+            <strong>${new URL(source.source).hostname}:</strong> 
+            <span style="color: #4fd1c5">${source.ip || `<span style="color: #fc8181">${source.error || 'Not available'}</span>`}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  // Initialize dropdown functionality
+  initializeDropdowns();
+}
+
+function createIpSourcesSection() {
+  const section = document.createElement('div');
+  section.className = 'section';
+  section.setAttribute('data-section', 'ip-sources');
+  section.innerHTML = `
+    <div class="title" onclick="toggleSection(this.parentElement)">IP Sources</div>
+    <div class="data"></div>
+  `;
+  document.getElementById('info').appendChild(section);
+  return section;
 }
 
 async function gatherSystemInfo() {
@@ -428,9 +792,31 @@ async function gatherSystemInfo() {
       'Browser Version': navigator.appVersion,
       'Cookies Enabled': navigator.cookieEnabled,
       'Language': navigator.language,
+      'Languages': JSON.stringify(navigator.languages),
       'Online Status': navigator.onLine,
       'Platform': navigator.platform,
-      'Do Not Track': navigator.doNotTrack || 'Not specified'
+      'Do Not Track': navigator.doNotTrack || 'Not specified',
+      'Vendor': navigator.vendor,
+      'Product': navigator.product,
+      'BuildID': navigator.buildID || 'Not available',
+      'PDF Viewer Enabled': navigator.pdfViewerEnabled || 'Not available',
+      'Java Enabled': navigator.javaEnabled ? navigator.javaEnabled() : 'Not available',
+      'Preferred Color Scheme': window.matchMedia('(prefers-color-scheme: dark)').matches ? 'Dark' : 'Light',
+      'Timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
+      'Timezone Offset': new Date().getTimezoneOffset(),
+      'Rendering': {
+        'WebGL Supported': !!window.WebGLRenderingContext,
+        'Canvas 2D Supported': !!window.CanvasRenderingContext2D,
+        'CSS Transforms 3D': checkCSSFeature('transform-3d'),
+        'CSS Animations': checkCSSFeature('animation'),
+        'CSS Filters': checkCSSFeature('filter')
+      },
+      'Features': {
+        'Websockets': !!window.WebSocket,
+        'Web Workers': !!window.Worker,
+        'Service Workers': 'serviceWorker' in navigator,
+        'WebAssembly': !!window.WebAssembly
+      }
     });
 
     info += createSection('display', 'Display Information', {
@@ -442,11 +828,30 @@ async function gatherSystemInfo() {
       'Window Size': `${window.innerWidth}x${window.innerHeight}`
     });
 
-    info += createSection('hardware', 'Hardware Information', {
+    const hardwareInfo = {
       'Logical CPU Cores': navigator.hardwareConcurrency,
       'Device Memory': `${navigator.deviceMemory || 'Not available'} GB`,
-      'Max Touch Points': navigator.maxTouchPoints
-    });
+      'Max Touch Points': navigator.maxTouchPoints,
+      'Virtual Reality Support': 'xr' in navigator ? 'Supported' : 'Not Supported',
+      'Device Architecture': navigator.platform,
+      'Screen Orientation': screen.orientation ? screen.orientation.type : 'Not available',
+      'Screen Rotation': screen.orientation ? screen.orientation.angle + '°' : 'Not available',
+      'Color Gamut': (() => {
+        if (window.matchMedia('(color-gamut: rec2020)').matches) return 'rec2020';
+        if (window.matchMedia('(color-gamut: p3)').matches) return 'p3';
+        if (window.matchMedia('(color-gamut: srgb)').matches) return 'srgb';
+        return 'Not available';
+      })(),
+      'Dynamic Range': (() => {
+        if (window.matchMedia('(dynamic-range: high)').matches) return 'HDR';
+        return 'SDR';
+      })()
+    };
+
+    info += createSection('hardware', 'Hardware Information', hardwareInfo);
+
+    const capabilities = await getSystemCapabilities();
+    info += createSection('capabilities', 'System Capabilities', capabilities);
 
     const gl = document.createElement('canvas').getContext('webgl');
     if (gl) {
@@ -563,6 +968,7 @@ async function gatherSystemInfo() {
       document.querySelector('.loading-overlay').style.display = 'none';
     }, 1000);
 
+    await updateIpSources();
     requestPermission('geolocation');
 
   } catch (error) {
@@ -575,20 +981,184 @@ async function gatherSystemInfo() {
   }
 }
 
+const tooltips = {
+  browser: {
+    title: "Browser Environment Information",
+    details: [
+      "User Agent String Analysis",
+      "Browser Feature Detection",
+      "Runtime Environment Details",
+      "Rendering Capabilities",
+      "API Support Levels"
+    ]
+  },
+  network: {
+    title: "Network Connectivity Details",
+    details: [
+      "Connection Type Detection",
+      "Bandwidth Estimation",
+      "Latency Measurements",
+      "Protocol Support",
+      "Network API Capabilities"
+    ]
+  },
+  hardware: {
+    title: "Hardware Information Details",
+    details: [
+      "Device Specifications",
+      "Capabilities and Limitations",
+      "Performance Metrics"
+    ]
+  },
+  media: {
+    title: "Media Capabilities Information",
+    details: [
+      "Audio and Video Support",
+      "Recording Features",
+      "Capture and Playback Performance"
+    ]
+  },
+  storage: {
+    title: "Storage Capacity and Usage",
+    details: [
+      "Local Storage Metrics",
+      "Quota and Usage Analysis",
+      "Available Storage Information"
+    ]
+  },
+  security: {
+    title: "Security Constraints and Features",
+    details: [
+      "HTTPS Status and Security",
+      "CORS and Storage Security",
+      "Permission States and Restrictions"
+    ]
+  },
+  capabilities: {
+    title: "System Capability Details",
+    details: [
+      "Supported Features Detection",
+      "Rendering and Performance Capabilities",
+      "Browser and Hardware Compatibilities"
+    ]
+  }
+};
+
 function createSection(id, title, data) {
+  const tooltip = tooltips[id];
+  const tooltipHtml = tooltip ? `
+    <div class="tooltip">
+      <span class="info-icon">ℹ️</span>
+      <span class="tooltiptext">
+        <strong>${tooltip.title}</strong>
+        <ul>
+          ${tooltip.details.map(detail => `<li>${detail}</li>`).join('')}
+        </ul>
+      </span>
+    </div>
+  ` : '';
+
   const dataHtml = Object.entries(data)
-    .map(([key, value]) => `<div><strong>${key}:</strong> ${value}</div>`)
-    .join('');
-  
+    .map(([key, value]) => `
+      <div class="copyable-content" onclick="copyToClipboard(this)">
+        <strong>${key}:</strong> 
+        <span>${value}</span>
+      </div>
+    `).join('');
+
   return `
     <div class="section" data-section="${id}">
-      <div class="title">${title}</div>
+      <div class="title">
+        ${title}
+        ${tooltipHtml}
+      </div>
       <div class="data">${dataHtml}</div>
     </div>
   `;
 }
 
+function initializeDropdowns() {
+  document.querySelectorAll('.info-dropdown h3').forEach(header => {
+    header.addEventListener('click', () => {
+      const dropdown = header.parentElement;
+      dropdown.classList.toggle('active');
+    });
+  });
+}
+
+function copyToClipboard(element) {
+  const text = element.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    Swal.fire({
+      icon: 'success',
+      title: 'Copied!',
+      text: 'Content copied to clipboard',
+      timer: 1500,
+      toast: true,
+      position: 'bottom-end'
+    });
+  });
+}
+
+function generateApiUrl() {
+  const currentUrl = window.location.origin + window.location.pathname;
+  const apiUrl = `${currentUrl}?api=true`;
+  
+  Swal.fire({
+    title: 'Share API URL',
+    html: `
+      <div style="margin: 10px 0;">
+        <input type="text" id="api-url" value="${apiUrl}" 
+               style="width: 100%; padding: 8px; margin-bottom: 10px;" readonly>
+        <button onclick="copyApiUrl()" class="request-permission-btn">
+          Copy URL
+        </button>
+      </div>
+    `,
+    showCancelButton: true,
+    cancelButtonText: 'Close'
+  });
+}
+
+function copyApiUrl() {
+  const urlInput = document.getElementById('api-url');
+  urlInput.select();
+  document.execCommand('copy');
+  
+  Swal.fire({
+    icon: 'success',
+    title: 'URL Copied!',
+    text: 'The API URL has been copied to your clipboard',
+    timer: 1500
+  });
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+}
+
+function updateTickerContent() {
+  const tickerContent = document.querySelector('.ticker-content');
+  const ipSources = document.querySelectorAll('[data-section="ip-sources"] .dropdown-content div');
+  const locationInfo = document.querySelectorAll('[data-section="location"] .dropdown-content div');
+  
+  let tickerText = '';
+  ipSources.forEach(source => {
+    tickerText += source.textContent + ' | ';
+  });
+  locationInfo.forEach(info => {
+    tickerText += info.textContent + ' | ';
+  });
+  
+  tickerContent.textContent = tickerText;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
   handleApiRequest();
   gatherSystemInfo();
 });
