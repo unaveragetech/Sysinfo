@@ -82,23 +82,37 @@ async function getDetailedAudioSupport() {
 }
 
 async function getDetailedVideoSupport() {
-  // Add video support checks here
+  const v = document.createElement('video');
+  return {
+    mp4: v.canPlayType('video/mp4; codecs="avc1.42E01E"') || 'no',
+    webm: v.canPlayType('video/webm; codecs="vp8, vorbis"') || 'no',
+    ogg: v.canPlayType('video/ogg; codecs="theora"') || 'no',
+    hls: v.canPlayType('application/vnd.apple.mpegurl') || 'no',
+    dash: v.canPlayType('application/dash+xml') || 'no',
+  };
 }
 
 async function getRecordingCapabilities() {
-  // Add recording support detection here
+  if (typeof MediaRecorder === 'undefined') return { supported: false };
+  return {
+    supported: true,
+    audioWebm: MediaRecorder.isTypeSupported('audio/webm'),
+    videoWebm: MediaRecorder.isTypeSupported('video/webm'),
+    audioOgg: MediaRecorder.isTypeSupported('audio/ogg'),
+    videoMp4: MediaRecorder.isTypeSupported('video/mp4'),
+  };
 }
 
 async function getTLSDetails() {
-  // Add TLS details fetching logic here
+  return window.isSecureContext ? 'TLS active (HTTPS)' : 'Not secure (HTTP)';
 }
 
 async function getSecurityCiphers() {
-  // Add logic for fetching security ciphers
+  return null;
 }
 
 async function getCertificateInfo() {
-  // Add logic for fetching certificate information
+  return null;
 }
 
 async function handleApiRequest() {
@@ -250,11 +264,11 @@ async function getSystemCapabilities() {
 
 async function getAllIpSources() {
   const sources = [
-    'https://ifconfig.me/ip',
-    'https://ipinfo.io/ip',
-    'https://icanhazip.com',
+    'https://api.ipify.org?format=text',
     'https://api64.ipify.org?format=text',
-    'https://checkip.amazonaws.com'
+    'https://ipapi.co/ip/',
+    'https://ipinfo.io/ip',
+    'https://ip.seeip.org',
   ];
 
   return Promise.all(sources.map(async source => {
@@ -306,7 +320,7 @@ async function getApiResponse() {
           },
           canvas2d: !!window.CanvasRenderingContext2D,
           css: {
-            transforms3d: checkCSSFeature('transform-3d'),
+            transforms3d: checkCSSFeature('transform'),
             animations: checkCSSFeature('animation'),
             filters: checkCSSFeature('filter')
           }
@@ -328,7 +342,7 @@ async function getApiResponse() {
       },
       hardware: {
         logicalCPUCores: navigator.hardwareConcurrency,
-        deviceMemory: `${navigator.deviceMemory || 'Not available'} GB`,
+        deviceMemory: navigator.deviceMemory || null,
         maxTouchPoints: navigator.maxTouchPoints,
         virtualRealitySupport: 'xr' in navigator ? 'Supported' : 'Not Supported',
         deviceArchitecture: navigator.platform,
@@ -415,20 +429,15 @@ async function getApiResponse() {
     }
 
     try {
-      const [ipApiData, ipifyData, ipWhoisData] = await Promise.all([
+      const [ipApiData, ipInfoData, ipWhoisData] = await Promise.all([
         fetch('https://ipapi.co/json/').then(res => res.json()),
-        fetch('https://api.ipify.org?format=json')
-          .then(res => res.json())
-          .then(async (data) => {
-            const geoData = await fetch(`https://ipapi.co/${data.ip}/json/`);
-            return geoData.json();
-          }),
+        fetch('https://ipinfo.io/json').then(res => res.json()),
         fetch('https://ipwho.is/').then(res => res.json())
       ]);
 
       systemInfo.location = {
         ipapi: ipApiData,
-        ipify: ipifyData,
+        ipinfo: ipInfoData,
         ipwhois: ipWhoisData,
         ipSources: ipSources
       };
@@ -592,15 +601,9 @@ async function checkLocation(coords) {
     const dataDiv = locationSection.querySelector('.data');
     dataDiv.innerHTML = '<div>Loading location data from multiple sources...</div>';
 
-    const [ipApiData, ipifyData, ipWhoisData] = await Promise.all([
+    const [ipApiData, ipInfoData, ipWhoisData] = await Promise.all([
       fetch('https://ipapi.co/json/').then(res => res.json()).catch(() => ({ error: 'Failed to fetch from ipapi.co' })),
-      fetch('https://api.ipify.org?format=json')
-        .then(res => res.json())
-        .then(async (data) => {
-          const geoData = await fetch(`https://ipapi.co/${data.ip}/json/`);
-          return geoData.json();
-        })
-        .catch(() => ({ error: 'Failed to fetch from ipify' })),
+      fetch('https://ipinfo.io/json').then(res => res.json()).catch(() => ({ error: 'Failed to fetch from ipinfo.io' })),
       fetch('https://ipwho.is/').then(res => res.json()).catch(() => ({ error: 'Failed to fetch from ipwhois' }))
     ]);
 
@@ -613,51 +616,65 @@ async function checkLocation(coords) {
           <div><strong>Latitude:</strong> ${coords.latitude}</div>
           <div><strong>Longitude:</strong> ${coords.longitude}</div>
           <div><strong>Accuracy:</strong> ${coords.accuracy} meters</div>
+          <div style="margin-top:8px">
+            <a href="https://www.openstreetmap.org/?mlat=${coords.latitude}&mlon=${coords.longitude}&zoom=15" target="_blank" rel="noopener" style="color:#4fd1c5;margin-right:12px">🗺️ OpenStreetMap</a>
+            <a href="https://maps.google.com/?q=${coords.latitude},${coords.longitude}" target="_blank" rel="noopener" style="color:#4fd1c5">📍 Google Maps</a>
+          </div>
         </div>
       </div>
 
       <div class="info-dropdown">
-        <h3>IP Location (Source 1 - ipapi.co)</h3>
+        <h3>IP Location (Source 1 — ipapi.co)</h3>
         <div class="dropdown-content">
-          <div><strong>IP Address:</strong> ${ipApiData.ip || 'Not available'}</div>
+          <div><strong>IP Address:</strong> <span style="color:#f6e05e">${ipApiData.ip || 'Not available'}</span></div>
           <div><strong>City:</strong> ${ipApiData.city || 'Not available'}</div>
           <div><strong>Region:</strong> ${ipApiData.region || 'Not available'}</div>
           <div><strong>Country:</strong> ${ipApiData.country_name || 'Not available'}</div>
-          <div><strong>ISP:</strong> ${ipApiData.org || 'Not available'}</div>
+          <div><strong>ISP / Org:</strong> ${ipApiData.org || 'Not available'}</div>
+          <div><strong>ASN:</strong> ${ipApiData.asn || 'Not available'}</div>
           <div><strong>Timezone:</strong> ${ipApiData.timezone || 'Not available'}</div>
+          <div><strong>Coordinates:</strong> ${ipApiData.latitude && ipApiData.longitude ? ipApiData.latitude + ', ' + ipApiData.longitude : 'Not available'}</div>
+          ${ipApiData.error ? `<div style="color:#fc8181">⚠️ ${ipApiData.error}</div>` : ''}
         </div>
       </div>
 
       <div class="info-dropdown">
-        <h3>IP Location (Source 2 - ipify)</h3>
+        <h3>IP Location (Source 2 — ipinfo.io)</h3>
         <div class="dropdown-content">
-          <div><strong>IP Address:</strong> ${ipifyData.ip || 'Not available'}</div>
-          <div><strong>City:</strong> ${ipifyData.city || 'Not available'}</div>
-          <div><strong>Region:</strong> ${ipifyData.region || 'Not available'}</div>
-          <div><strong>Country:</strong> ${ipifyData.country_name || 'Not available'}</div>
-          <div><strong>ISP:</strong> ${ipifyData.org || 'Not available'}</div>
+          <div><strong>IP Address:</strong> <span style="color:#f6e05e">${ipInfoData.ip || 'Not available'}</span></div>
+          <div><strong>City:</strong> ${ipInfoData.city || 'Not available'}</div>
+          <div><strong>Region:</strong> ${ipInfoData.region || 'Not available'}</div>
+          <div><strong>Country:</strong> ${ipInfoData.country || 'Not available'}</div>
+          <div><strong>ISP / Org:</strong> ${ipInfoData.org || 'Not available'}</div>
+          <div><strong>Postal:</strong> ${ipInfoData.postal || 'Not available'}</div>
+          <div><strong>Timezone:</strong> ${ipInfoData.timezone || 'Not available'}</div>
+          <div><strong>Coordinates:</strong> ${ipInfoData.loc || 'Not available'}</div>
+          ${ipInfoData.error ? `<div style="color:#fc8181">⚠️ ${ipInfoData.error}</div>` : ''}
         </div>
       </div>
 
       <div class="info-dropdown">
-        <h3>IP Location (Source 3 - ipwhois)</h3>
+        <h3>IP Location (Source 3 — ipwhois.is)</h3>
         <div class="dropdown-content">
-          <div><strong>IP Address:</strong> ${ipWhoisData.ip || 'Not available'}</div>
+          <div><strong>IP Address:</strong> <span style="color:#f6e05e">${ipWhoisData.ip || 'Not available'}</span></div>
           <div><strong>City:</strong> ${ipWhoisData.city || 'Not available'}</div>
           <div><strong>Region:</strong> ${ipWhoisData.region || 'Not available'}</div>
           <div><strong>Country:</strong> ${ipWhoisData.country || 'Not available'}</div>
           <div><strong>ISP:</strong> ${ipWhoisData.connection?.isp || 'Not available'}</div>
+          <div><strong>ASN:</strong> ${ipWhoisData.connection?.asn ? 'AS' + ipWhoisData.connection.asn : 'Not available'}</div>
           <div><strong>Timezone:</strong> ${ipWhoisData.timezone?.id || 'Not available'}</div>
+          ${ipWhoisData.error ? `<div style="color:#fc8181">⚠️ ${ipWhoisData.error}</div>` : ''}
         </div>
       </div>
 
       <div class="info-dropdown">
-        <h3>IP Addresses from Multiple Sources</h3>
+        <h3>IP Address Verification (Multiple Sources)</h3>
         <div class="dropdown-content">
           ${ipSources.map(source => `
-            <div style="margin: 10px 0; padding: 8px; background: rgba(0, 0, 0, 0.2); border-radius: 4px;">
-              <strong>${new URL(source.source).hostname}:</strong> 
-              <span style="color: #4fd1c5">${source.ip || `<span style="color: #fc8181">${source.error || 'Not available'}</span>`}</span>
+            <div style="margin: 8px 0; padding: 8px 12px; background: rgba(0, 0, 0, 0.2); border-radius: 6px; display:flex; align-items:center; gap:10px;">
+              <span style="width:8px;height:8px;border-radius:50%;background:${source.ip ? '#68d391' : '#fc8181'};flex-shrink:0;display:inline-block"></span>
+              <strong style="color:#90cdf4">${new URL(source.source).hostname}:</strong>
+              <span style="color:${source.ip ? '#f6e05e' : '#fc8181'};font-family:monospace">${source.ip || source.error || 'Not available'}</span>
             </div>
           `).join('')}
         </div>
@@ -1006,11 +1023,28 @@ function createSection(id, title, data) {
     </div>
   ` : '';
 
+  function renderValue(value, depth) {
+    if (value === null || value === undefined) return '<span style="color:#718096">N/A</span>';
+    if (typeof value === 'boolean') return value
+      ? '<span style="color:#68d391">✓ Yes</span>'
+      : '<span style="color:#fc8181">✗ No</span>';
+    if (Array.isArray(value)) return value.length ? value.join(', ') : '<span style="color:#718096">None</span>';
+    if (typeof value === 'object') {
+      if (depth > 1) return JSON.stringify(value);
+      return '<div style="padding-left:12px;border-left:2px solid rgba(79,209,197,0.3);margin-top:4px">'
+        + Object.entries(value).map(([k, v]) =>
+            `<div style="margin:3px 0"><span style="color:#90cdf4">${k}:</span> ${renderValue(v, depth + 1)}</div>`
+          ).join('')
+        + '</div>';
+    }
+    return String(value);
+  }
+
   const dataHtml = Object.entries(data)
     .map(([key, value]) => `
       <div class="copyable-content" onclick="copyToClipboard(this)">
-        <strong>${key}:</strong> 
-        <span>${value}</span>
+        <strong>${key}:</strong>
+        <span>${renderValue(value, 0)}</span>
       </div>
     `).join('');
 
@@ -1266,8 +1300,10 @@ function _buildSummary(d) {
   const loc = d.location || {};
   const ua = b.userAgent || '';
   const browserName = /Firefox/i.test(ua) ? 'Firefox' : /Edg/i.test(ua) ? 'Edge' : /Chrome/i.test(ua) ? 'Chrome' : /Safari/i.test(ua) ? 'Safari' : 'Browser';
-  const ip = (loc.ipapi && loc.ipapi.ip) || (Array.isArray(d.ipSources) && d.ipSources.find(s => s.ip) && d.ipSources.find(s => s.ip).ip) || '—';
-  const locStr = [loc.ipapi && loc.ipapi.city, loc.ipapi && loc.ipapi.country_name].filter(Boolean).join(', ') || '—';
+  const ip = (loc.ipapi && loc.ipapi.ip) || (loc.ipinfo && loc.ipinfo.ip) || (Array.isArray(d.ipSources) && d.ipSources.find(s => s.ip) && d.ipSources.find(s => s.ip).ip) || '—';
+  const locStr = [loc.ipapi && loc.ipapi.city, loc.ipapi && loc.ipapi.country_name].filter(Boolean).join(', ')
+    || [loc.ipinfo && loc.ipinfo.city, loc.ipinfo && loc.ipinfo.country].filter(Boolean).join(', ')
+    || '—';
   const cards = [
     { icon: '🌐', label: 'Browser', val: browserName, sub: b.language || '' },
     { icon: '💻', label: 'Platform', val: hw.deviceArchitecture || b.platform || '—', sub: (d.deviceInfo && d.deviceInfo.type) || '' },
@@ -1420,6 +1456,22 @@ function _buildLocationCard(loc) {
     rows.push(_apiRow('In EU', a.in_eu));
     if (a.latitude && a.longitude) {
       rows.push(`<div class="api-row"><div class="api-row-key">Map Links</div><div class="api-row-val"><a class="api-map-link" href="https://www.openstreetmap.org/?mlat=${a.latitude}&mlon=${a.longitude}&zoom=12" target="_blank" rel="noopener">🗺️ OpenStreetMap</a><a class="api-map-link" href="https://maps.google.com/?q=${a.latitude},${a.longitude}" target="_blank" rel="noopener">📍 Google Maps</a></div></div>`);
+    }
+  }
+  if (loc.ipinfo && !loc.ipinfo.error) {
+    const i = loc.ipinfo;
+    const [lat, lon] = (i.loc || '').split(',');
+    rows.push(_subTitle('Secondary Location (ipinfo.io)'));
+    rows.push(_apiRow('IP Address', i.ip));
+    rows.push(_apiRow('City', i.city));
+    rows.push(_apiRow('Region', i.region));
+    rows.push(_apiRow('Country', i.country));
+    rows.push(_apiRow('Coordinates', i.loc || null));
+    rows.push(_apiRow('ISP / Org', i.org));
+    rows.push(_apiRow('Postal Code', i.postal));
+    rows.push(_apiRow('Timezone', i.timezone));
+    if (lat && lon) {
+      rows.push(`<div class="api-row"><div class="api-row-key">Map Links</div><div class="api-row-val"><a class="api-map-link" href="https://www.openstreetmap.org/?mlat=${_esc(lat)}&mlon=${_esc(lon)}&zoom=12" target="_blank" rel="noopener">🗺️ OpenStreetMap</a><a class="api-map-link" href="https://maps.google.com/?q=${_esc(lat)},${_esc(lon)}" target="_blank" rel="noopener">📍 Google Maps</a></div></div>`);
     }
   }
   if (loc.ipwhois && !loc.ipwhois.error) {
