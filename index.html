@@ -33,14 +33,8 @@
 
 <div class="container">
   <h1>Enhanced System Information Scanner</h1>
-  <h1>Free information for you and them as well as others</h1>
-  <h1> (╯°□°）╯︵ ┻━┻ </h1>
-  <button onclick="refreshAllData()" class="request-permission-btn" style="float:right;margin-top:-40px;">
-    Refresh All Data And show rolling data at the top of the screen(refresh the page first please user)
-  </button>
-  <h1>( o) ( o) -  -  -  -  -  -  (__(__)</h1>
-  <h1>~Stop looking at my booty~<h1>
-  <h1>┏(-_-)┛┗(-_-﻿ )┓┗(-_-)┛┏(-_-)┓</h1>
+  <p style="color:#90cdf4;font-size:1rem;margin:0.5rem 0 1.5rem;">Real-time browser, hardware, network &amp; location analysis — all client-side, nothing stored.</p>
+  <button onclick="refreshAllData()" class="request-permission-btn" style="float:right;margin-top:-10px;">🔄 Refresh All Data</button>
 
   <div id="info"></div>
   <p class="warning">⚠️ Some information might be limited due to browser security restrictions. This tool respects your privacy and only accesses publicly available system information.</p>
@@ -109,108 +103,31 @@ async function getCertificateInfo() {
 
 async function handleApiRequest() {
   const urlParams = new URLSearchParams(window.location.search);
-  const isApiRequest = urlParams.get('api') === 'true';
+  if (urlParams.get('api') !== 'true') return;
 
-  if (isApiRequest) {
-    try {
-      // Hide regular UI elements
-      document.querySelector('.sidebar').style.display = 'none';
-      document.querySelector('.info-ticker').style.display = 'none';
-      document.querySelector('.theme-switch').style.display = 'none';
-      document.querySelector('.container').style.display = 'none';
+  ['sidebar', 'info-ticker', 'theme-switch', 'container'].forEach(cls => {
+    const el = document.querySelector('.' + cls);
+    if (el) el.style.display = 'none';
+  });
+  document.body.style.marginLeft = '0';
 
-      // Create API container
-      const apiContainer = document.createElement('div');
-      apiContainer.className = 'api-container';
-      
-      // Add refresh button
-      const refreshButton = document.createElement('button');
-      refreshButton.className = 'api-refresh-btn';
-      refreshButton.textContent = 'Refresh Data';
-      refreshButton.onclick = async () => {
-        const response = await getApiResponse();
-        pre.textContent = JSON.stringify(response, null, 2);
-      };
-      apiContainer.appendChild(refreshButton);
-
-      // Add pre element for API response
-      const pre = document.createElement('pre');
-      const response = await getApiResponse();
-      pre.textContent = JSON.stringify(response, null, 2);
-      apiContainer.appendChild(pre);
-
-      document.body.appendChild(apiContainer);
-
-      // Add API-specific styling
-      const style = document.createElement('style');
-      style.textContent = `
-        body { 
-          margin: 0;
-          padding: 20px;
-          background: var(--bg-gradient-from);
-          color: var(--text-color);
-          min-height: 100vh;
-          overflow-y: auto;
-        }
-        .api-container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 20px;
-        }
-        .api-refresh-btn {
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          background: #4fd1c5;
-          border: none;
-          padding: 10px 20px;
-          border-radius: 4px;
-          color: #1a1a2e;
-          cursor: pointer;
-          z-index: 1000;
-          transition: all 0.3s ease;
-        }
-        .api-refresh-btn:hover {
-          background: #38b2ac;
-          transform: translateY(-2px);
-        }
-        pre {
-          background: var(--section-bg);
-          padding: 20px;
-          border-radius: 8px;
-          overflow-x: auto;
-          white-space: pre-wrap;
-          word-wrap: break-word;
-          font-family: 'Consolas', monospace;
-          color: #4fd1c5;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-          margin-top: 60px;
-          max-height: none !important;
-        }
-        pre::-webkit-scrollbar {
-          width: 8px;
-          height: 8px;
-        }
-        pre::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.2);
-          border-radius: 4px;
-        }
-        pre::-webkit-scrollbar-thumb {
-          background: #4fd1c5;
-          border-radius: 4px;
-        }
-      `;
-      document.head.appendChild(style);
-    } catch (error) {
-      console.error('API response error:', error);
-      const pre = document.createElement('pre');
-      pre.textContent = JSON.stringify({
-        status: 'error',
-        timestamp: new Date().toISOString(),
-        error: error.message
-      }, null, 2);
-      document.body.appendChild(pre);
-    }
+  try {
+    const response = await getApiResponse();
+    window._apiData = response;
+    const styleEl = document.createElement('style');
+    styleEl.textContent = getApiPageStyles();
+    document.head.appendChild(styleEl);
+    const wrapper = document.createElement('div');
+    wrapper.id = 'api-wrapper';
+    wrapper.innerHTML = buildApiPageHtml(response);
+    document.body.appendChild(wrapper);
+    setupApiPageInteractions();
+  } catch (error) {
+    console.error('API response error:', error);
+    document.body.innerHTML += `<div style="padding:40px;font-family:monospace;background:#1a1a2e;min-height:100vh;color:#f56565;"><h2 style="color:#4fd1c5;margin-bottom:12px;">Error collecting data</h2><pre>${error.message}</pre></div>`;
+  } finally {
+    const overlay = document.querySelector('.loading-overlay');
+    if (overlay) overlay.style.display = 'none';
   }
 }
 
@@ -367,6 +284,15 @@ async function getApiResponse() {
         vendor: navigator.vendor,
         product: navigator.product,
         buildID: navigator.buildID || 'Not available',
+        pluginsCount: navigator.plugins ? navigator.plugins.length : 0,
+        userAgentData: navigator.userAgentData ? {
+          brands: navigator.userAgentData.brands,
+          mobile: navigator.userAgentData.mobile,
+          platform: navigator.userAgentData.platform
+        } : 'Not supported',
+        fontCount: typeof document.fonts !== 'undefined' ? document.fonts.size : 'N/A',
+        reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+        highContrast: window.matchMedia('(forced-colors: active)').matches,
         pdfViewerEnabled: navigator.pdfViewerEnabled || 'Not available',
         javaEnabled: navigator.javaEnabled ? navigator.javaEnabled() : 'Not available',
         preferredColorScheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'Dark' : 'Light',
@@ -462,6 +388,8 @@ async function getApiResponse() {
     const capabilities = await getSystemCapabilities();
     systemInfo.capabilities = capabilities;
 
+    systemInfo.mediaDevices = await getMediaDeviceInfo();
+
     const ipSources = await getAllIpSources();
     systemInfo.ipSources = ipSources;
 
@@ -519,6 +447,20 @@ async function getApiResponse() {
       timestamp: new Date().toISOString(),
       error: error.message
     };
+  }
+}
+
+async function getMediaDeviceInfo() {
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    return {
+      cameras: devices.filter(d => d.kind === 'videoinput').length,
+      microphones: devices.filter(d => d.kind === 'audioinput').length,
+      speakers: devices.filter(d => d.kind === 'audiooutput').length,
+      total: devices.length
+    };
+  } catch {
+    return 'Not available';
   }
 }
 
@@ -1107,14 +1049,13 @@ function copyToClipboard(element) {
 }
 
 function generateApiUrl() {
-  const currentUrl = window.location.origin + window.location.pathname;
-  const apiUrl = `${currentUrl}?api=true`;
+  const apiUrl = encodeURI(window.location.origin + window.location.pathname) + '?api=true';
   
   Swal.fire({
     title: 'Share API URL',
     html: `
       <div style="margin: 10px 0;">
-        <input type="text" id="api-url" value="${apiUrl}" 
+        <input type="text" id="api-url" value="${apiUrl.replace(/"/g, '&quot;')}"
                style="width: 100%; padding: 8px; margin-bottom: 10px;" readonly>
         <button onclick="copyApiUrl()" class="request-permission-btn">
           Copy URL
@@ -1160,6 +1101,537 @@ function updateTickerContent() {
   });
   
   tickerContent.textContent = tickerText;
+}
+
+// ─── API Page Display Functions ──────────────────────────────────────────────
+
+function getApiPageStyles() {
+  return `
+    #api-wrapper * { box-sizing: border-box; }
+    body { margin: 0 !important; padding: 0 !important; background: #0f0f1a !important; overflow-x: hidden; }
+    .api-topbar { position: fixed; top: 0; left: 0; right: 0; height: 56px; z-index: 900; background: rgba(10,10,25,0.97); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(79,209,197,0.2); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; gap: 16px; }
+    .api-brand { display: flex; align-items: center; gap: 10px; }
+    .api-brand-logo { font-size: 1.3rem; }
+    .api-brand-title { color: #4fd1c5; font-size: 1.05rem; font-weight: 700; }
+    .api-brand-badge { background: rgba(79,209,197,0.15); border: 1px solid rgba(79,209,197,0.4); color: #4fd1c5; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; letter-spacing: 0.8px; }
+    .api-topbar-center { flex: 1; text-align: center; }
+    .api-timestamp { color: #718096; font-size: 0.82rem; }
+    .api-topbar-actions { display: flex; gap: 8px; }
+    .api-action-btn { background: rgba(79,209,197,0.08); border: 1px solid rgba(79,209,197,0.3); color: #4fd1c5; padding: 6px 13px; border-radius: 6px; cursor: pointer; font-size: 0.82rem; transition: all 0.2s; white-space: nowrap; }
+    .api-action-btn:hover { background: rgba(79,209,197,0.2); transform: translateY(-1px); }
+    .api-layout { display: flex; padding-top: 56px; min-height: 100vh; }
+    .api-sidebar { position: fixed; top: 56px; left: 0; bottom: 0; width: 200px; background: rgba(0,0,0,0.4); border-right: 1px solid rgba(255,255,255,0.06); overflow-y: auto; padding: 10px 0; z-index: 800; }
+    .api-nav-label { padding: 10px 16px 4px; color: #4a5568; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
+    .api-nav-link { display: flex; align-items: center; gap: 8px; padding: 8px 14px; color: #a0aec0; font-size: 0.87rem; border-left: 3px solid transparent; cursor: pointer; transition: all 0.2s; }
+    .api-nav-link:hover { background: rgba(79,209,197,0.08); color: #e2e8f0; border-left-color: rgba(79,209,197,0.4); }
+    .api-nav-link.active { background: rgba(79,209,197,0.12); color: #4fd1c5; border-left-color: #4fd1c5; font-weight: 600; }
+    .api-nav-icon { width: 18px; text-align: center; flex-shrink: 0; }
+    .api-main { margin-left: 200px; flex: 1; padding: 24px; min-width: 0; }
+    .api-summary { display: grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap: 12px; margin-bottom: 26px; }
+    .api-summary-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px; transition: transform 0.2s; }
+    .api-summary-card:hover { transform: translateY(-2px); }
+    .api-summary-icon { font-size: 1.3rem; margin-bottom: 7px; }
+    .api-summary-label { color: #718096; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .api-summary-val { color: #e2e8f0; font-size: 0.97rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .api-summary-sub { color: #718096; font-size: 0.77rem; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .api-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+    .api-card-header { display: flex; align-items: center; gap: 11px; padding: 13px 20px; background: rgba(0,0,0,0.15); border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .api-card-icon { font-size: 1.15rem; }
+    .api-card-title { color: #4fd1c5; font-size: 0.98rem; font-weight: 600; }
+    .api-row { display: flex; align-items: flex-start; padding: 9px 20px; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
+    .api-row:last-child { border-bottom: none; }
+    .api-row:hover { background: rgba(255,255,255,0.025); }
+    .api-row-key { color: #90cdf4; font-size: 0.86rem; min-width: 190px; max-width: 230px; padding-right: 14px; padding-top: 1px; font-weight: 500; flex-shrink: 0; }
+    .api-row-val { color: #e0e0e0; font-size: 0.86rem; flex: 1; word-break: break-word; }
+    .api-row-copy { background: transparent; border: none; color: #4fd1c5; cursor: pointer; padding: 0 5px; opacity: 0; transition: opacity 0.15s; font-size: 0.75rem; margin-left: 6px; flex-shrink: 0; }
+    .api-row:hover .api-row-copy { opacity: 0.7; }
+    .api-row-copy:hover { opacity: 1 !important; }
+    .v-true { color: #68d391; } .v-false { color: #fc8181; }
+    .v-num { color: #90cdf4; font-family: 'Consolas',monospace; }
+    .v-ip { color: #f6e05e; font-family: 'Consolas',monospace; }
+    .v-na { color: #4a5568; font-style: italic; }
+    .v-warn { color: #f6ad55; }
+    .badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 0.77rem; margin: 2px; }
+    .badge-green { background: rgba(72,187,120,0.15); color: #68d391; border: 1px solid rgba(72,187,120,0.25); }
+    .badge-red { background: rgba(245,101,101,0.15); color: #fc8181; border: 1px solid rgba(245,101,101,0.25); }
+    .api-progress-bg { background: rgba(255,255,255,0.1); border-radius: 6px; height: 6px; overflow: hidden; margin-top: 5px; }
+    .api-progress-fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; }
+    .api-pg-green { background: linear-gradient(90deg, #48bb78, #68d391); }
+    .api-pg-yellow { background: linear-gradient(90deg, #ecc94b, #f6e05e); }
+    .api-pg-red { background: linear-gradient(90deg, #f56565, #fc8181); }
+    .api-pg-blue { background: linear-gradient(90deg, #4fd1c5, #76e4f7); }
+    .api-ip-list { padding: 10px 20px; }
+    .api-ip-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(0,0,0,0.15); border-radius: 7px; margin-bottom: 7px; }
+    .api-ip-dot { width: 7px; height: 7px; border-radius: 50%; background: #68d391; flex-shrink: 0; }
+    .api-ip-dot.err { background: #fc8181; }
+    .api-ip-host { color: #90cdf4; font-size: 0.85rem; flex: 1; }
+    .api-ip-addr { color: #f6e05e; font-family: 'Consolas',monospace; font-size: 0.88rem; }
+    .api-ip-err { color: #fc8181; font-size: 0.8rem; }
+    .api-map-link { display: inline-flex; align-items: center; gap: 5px; color: #4fd1c5; text-decoration: none; font-size: 0.84rem; padding: 5px 10px; border: 1px solid rgba(79,209,197,0.3); border-radius: 5px; margin: 3px; transition: background 0.2s; }
+    .api-map-link:hover { background: rgba(79,209,197,0.1); }
+    .api-sub-title { padding: 10px 20px 5px; color: #4a5568; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.8px; border-top: 1px solid rgba(255,255,255,0.04); margin-top: 4px; }
+    .api-codec-row { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 20px 12px; }
+    @media (max-width: 768px) {
+      .api-sidebar { display: none; }
+      .api-main { margin-left: 0; padding: 12px; }
+      .api-topbar-center { display: none; }
+      .api-row-key { min-width: 130px; max-width: 160px; }
+      .api-summary { grid-template-columns: repeat(2,1fr); }
+    }
+  `;
+}
+
+function _esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function _fmtVal(v) {
+  if (v === null || v === undefined || v === 'Not available' || v === 'N/A' || v === '') {
+    return '<span class="v-na">—</span>';
+  }
+  if (typeof v === 'boolean') return v ? '<span class="v-true">✓ Yes</span>' : '<span class="v-false">✗ No</span>';
+  const s = String(v);
+  if (s === 'true' || s === 'Supported' || s === 'granted' || s === 'Yes') return `<span class="v-true">✓ ${_esc(s)}</span>`;
+  if (s === 'false' || s === 'Not Supported' || s === 'denied' || s === 'No') return `<span class="v-false">✗ ${_esc(s)}</span>`;
+  if (s === 'prompt' || s === 'not supported') return `<span class="v-warn">${_esc(s)}</span>`;
+  if (typeof v === 'number') return `<span class="v-num">${v.toLocaleString()}</span>`;
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(s.trim())) return `<span class="v-ip">${_esc(s)}</span>`;
+  return _esc(s);
+}
+
+function _apiRow(k, v) {
+  const raw = String(v == null ? '' : v).replace(/<[^>]+>/g, '');
+  return `<div class="api-row" data-copy="${_esc(raw)}"><div class="api-row-key">${_esc(k)}</div><div class="api-row-val">${_fmtVal(v)}</div><button class="api-row-copy" title="Copy value">⎘</button></div>`;
+}
+
+function _apiCard(id, icon, title, body) {
+  return `<div class="api-card" id="api-sec-${id}"><div class="api-card-header"><span class="api-card-icon">${icon}</span><span class="api-card-title">${title}</span></div><div class="api-card-body">${body}</div></div>`;
+}
+
+function _subTitle(t) {
+  return `<div class="api-sub-title">${_esc(t)}</div>`;
+}
+
+function buildApiPageHtml(response) {
+  const d = response.data || {};
+  const ts = response.timestamp ? new Date(response.timestamp).toLocaleString() : '—';
+  const navItems = [
+    ['summary','📊','Overview'], ['browser','🌐','Browser'], ['display','🖥️','Display'],
+    ['hardware','💻','Hardware'], ['network','📡','Network'], ['location','📍','Location'],
+    ['ip','🌍','IP Sources'], ['security','🔒','Security'], ['media','🎵','Media'],
+    ['storage','💾','Storage'], ['battery','🔋','Battery'], ['capabilities','⚡','Capabilities'],
+  ];
+  const navHtml = `
+    <div class="api-nav-label">Sections</div>
+    ${navItems.map(([id, icon, lbl]) => `<div class="api-nav-link" id="nav-${id}" onclick="apiScrollTo('api-sec-${id}')"><span class="api-nav-icon">${icon}</span>${lbl}</div>`).join('')}
+    <div class="api-nav-label" style="margin-top:10px">Actions</div>
+    <div class="api-nav-link" onclick="copyJsonData()"><span class="api-nav-icon">📋</span>Copy JSON</div>
+    <div class="api-nav-link" onclick="shareApiLink()"><span class="api-nav-icon">🔗</span>Share Link</div>
+  `;
+  return `
+    <div class="api-topbar">
+      <div class="api-brand"><span class="api-brand-logo">🔍</span><span class="api-brand-title">SysInfo</span><span class="api-brand-badge">LIVE REPORT</span></div>
+      <div class="api-topbar-center"><span class="api-timestamp">Collected: ${ts}</span></div>
+      <div class="api-topbar-actions">
+        <button class="api-action-btn" onclick="refreshApiData()">🔄 Refresh</button>
+        <button class="api-action-btn" onclick="copyJsonData()">📋 Copy JSON</button>
+        <button class="api-action-btn" onclick="shareApiLink()">🔗 Share</button>
+      </div>
+    </div>
+    <div class="api-layout">
+      <nav class="api-sidebar">${navHtml}</nav>
+      <main class="api-main">
+        ${_buildSummary(d)}
+        ${_buildBrowserCard(d.browser)}
+        ${_buildDisplayCard(d.display)}
+        ${_buildHardwareCard(d.hardware, d.deviceInfo, d.mediaDevices)}
+        ${_buildNetworkCard(d.network, d.networkTests)}
+        ${_buildLocationCard(d.location)}
+        ${_buildIpCard(d.ipSources)}
+        ${_buildSecurityCard(d.securityInfo)}
+        ${_buildMediaCard(d.mediaCapabilities)}
+        ${_buildStorageCard(d.storageInfo)}
+        ${_buildBatteryCard(d.battery)}
+        ${_buildCapabilitiesCard(d.capabilities)}
+      </main>
+    </div>`;
+}
+
+function _buildSummary(d) {
+  const b = d.browser || {};
+  const hw = d.hardware || {};
+  const net = d.network || {};
+  const loc = d.location || {};
+  const ua = b.userAgent || '';
+  const browserName = /Firefox/i.test(ua) ? 'Firefox' : /Edg/i.test(ua) ? 'Edge' : /Chrome/i.test(ua) ? 'Chrome' : /Safari/i.test(ua) ? 'Safari' : 'Browser';
+  const ip = (loc.ipapi && loc.ipapi.ip) || (Array.isArray(d.ipSources) && d.ipSources.find(s => s.ip) && d.ipSources.find(s => s.ip).ip) || '—';
+  const locStr = [loc.ipapi && loc.ipapi.city, loc.ipapi && loc.ipapi.country_name].filter(Boolean).join(', ') || '—';
+  const cards = [
+    { icon: '🌐', label: 'Browser', val: browserName, sub: b.language || '' },
+    { icon: '💻', label: 'Platform', val: hw.deviceArchitecture || b.platform || '—', sub: (d.deviceInfo && d.deviceInfo.type) || '' },
+    { icon: '🌍', label: 'IP Address', val: ip, sub: locStr },
+    { icon: '📡', label: 'Connection', val: net.connectionType || '—', sub: net.downlink ? net.downlink + ' Mbps' : '' },
+    { icon: '🧠', label: 'CPU Cores', val: hw.logicalCPUCores || '—', sub: hw.deviceMemory ? hw.deviceMemory + ' GB RAM' : '' },
+    { icon: '🔒', label: 'Secure', val: (d.securityInfo && d.securityInfo.https) ? '✓ HTTPS' : '— HTTP', sub: '' },
+  ];
+  return `<div id="api-sec-summary"><div class="api-summary">${cards.map(c => `<div class="api-summary-card"><div class="api-summary-icon">${c.icon}</div><div class="api-summary-label">${c.label}</div><div class="api-summary-val">${_esc(String(c.val))}</div>${c.sub ? `<div class="api-summary-sub">${_esc(String(c.sub))}</div>` : ''}</div>`).join('')}</div></div>`;
+}
+
+function _buildBrowserCard(b) {
+  if (!b) return '';
+  let rows = [
+    _apiRow('User Agent', b.userAgent),
+    _apiRow('Browser Name', b.browser),
+    _apiRow('Version', b.version),
+    _apiRow('Language', b.language),
+    _apiRow('Languages', b.languages),
+    _apiRow('Platform', b.platform),
+    _apiRow('Vendor', b.vendor),
+    _apiRow('Online Status', b.online),
+    _apiRow('Cookies Enabled', b.cookiesEnabled),
+    _apiRow('Do Not Track', b.doNotTrack),
+    _apiRow('Timezone', b.timezone),
+    _apiRow('Timezone Offset', b.timezoneOffset !== undefined ? `UTC${b.timezoneOffset <= 0 ? '+' : ''}${-b.timezoneOffset / 60}h` : null),
+    _apiRow('Color Scheme', b.preferredColorScheme),
+    _apiRow('Reduced Motion', b.reducedMotion),
+    _apiRow('High Contrast', b.highContrast),
+    _apiRow('PDF Viewer', b.pdfViewerEnabled),
+    _apiRow('Browser Plugins', b.pluginsCount),
+    _apiRow('Font Count', b.fontCount),
+    _apiRow('Build ID', b.buildID),
+  ];
+  if (b.userAgentData && typeof b.userAgentData === 'object') {
+    rows.push(_subTitle('User-Agent Client Hints'));
+    rows.push(_apiRow('UA Platform', b.userAgentData.platform));
+    rows.push(_apiRow('Mobile', b.userAgentData.mobile));
+    if (Array.isArray(b.userAgentData.brands)) {
+      rows.push(_apiRow('Brands', b.userAgentData.brands.map(br => br.brand + ' ' + br.version).join(', ')));
+    }
+  }
+  if (b.features) {
+    rows.push(_subTitle('Features'));
+    rows.push(_apiRow('WebSockets', b.features.websockets));
+    rows.push(_apiRow('Web Workers', b.features.webworkers));
+    rows.push(_apiRow('Service Workers', b.features.serviceworkers));
+    rows.push(_apiRow('WebAssembly', b.features.webassembly));
+  }
+  if (b.rendering) {
+    rows.push(_subTitle('Rendering'));
+    rows.push(_apiRow('WebGL', b.rendering.webgl && b.rendering.webgl.supported));
+    rows.push(_apiRow('Canvas 2D', b.rendering.canvas2d));
+    if (b.rendering.css) {
+      rows.push(_apiRow('CSS 3D Transforms', b.rendering.css.transforms3d));
+      rows.push(_apiRow('CSS Animations', b.rendering.css.animations));
+      rows.push(_apiRow('CSS Filters', b.rendering.css.filters));
+    }
+  }
+  return _apiCard('browser', '🌐', 'Browser Information', rows.join(''));
+}
+
+function _buildDisplayCard(d) {
+  if (!d) return '';
+  return _apiCard('display', '🖥️', 'Display Information', [
+    _apiRow('Screen Resolution', d.resolution),
+    _apiRow('Available Screen', d.availableScreen),
+    _apiRow('Color Depth', d.colorDepth ? d.colorDepth + ' bits' : null),
+    _apiRow('Pixel Depth', d.pixelDepth ? d.pixelDepth + ' bits' : null),
+    _apiRow('Device Pixel Ratio', d.devicePixelRatio),
+    _apiRow('Window Size', d.windowSize),
+  ].join(''));
+}
+
+function _buildHardwareCard(hw, di, md) {
+  if (!hw && !di) return '';
+  const h = hw || {};
+  let rows = [
+    _apiRow('Logical CPU Cores', h.logicalCPUCores),
+    _apiRow('Device Memory', h.deviceMemory != null ? h.deviceMemory + ' GB' : null),
+    _apiRow('Max Touch Points', h.maxTouchPoints),
+    _apiRow('Device Architecture', h.deviceArchitecture),
+    _apiRow('Screen Orientation', h.screenOrientation),
+    _apiRow('Screen Rotation', h.screenRotation),
+    _apiRow('Color Gamut', h.colorGamut),
+    _apiRow('Dynamic Range', h.dynamicRange),
+    _apiRow('VR/XR Support', h.virtualRealitySupport),
+  ];
+  if (di) {
+    rows.push(_subTitle('Device Details'));
+    rows.push(_apiRow('Device Type', di.type));
+    if (di.screenInfo) {
+      rows.push(_apiRow('Extended Display', di.screenInfo.isExtended));
+      rows.push(_apiRow('Screen Color Depth', di.screenInfo.colorDepth));
+    }
+  }
+  if (md && typeof md === 'object') {
+    rows.push(_subTitle('Media Devices'));
+    rows.push(_apiRow('Cameras', md.cameras));
+    rows.push(_apiRow('Microphones', md.microphones));
+    rows.push(_apiRow('Speakers / Output', md.speakers));
+    rows.push(_apiRow('Total Devices', md.total));
+  }
+  return _apiCard('hardware', '💻', 'Hardware Information', rows.join(''));
+}
+
+function _buildNetworkCard(net, tests) {
+  const n = net || {};
+  const t = tests || {};
+  let rows = [];
+  if (n.connectionType) {
+    rows.push(_apiRow('Connection Type', n.connectionType));
+    rows.push(_apiRow('Downlink Speed', n.downlink ? n.downlink + ' Mbps' : null));
+    rows.push(_apiRow('RTT', n.rtt ? n.rtt + ' ms' : null));
+    rows.push(_apiRow('Save Data Mode', n.saveData));
+  }
+  if (t.latency !== undefined) {
+    rows.push(_subTitle('Network Tests'));
+    rows.push(_apiRow('Measured Latency', t.latency ? Math.round(t.latency) + ' ms' : null));
+    rows.push(_apiRow('Estimated Bandwidth', t.bandwidth));
+    if (t.protocols) {
+      rows.push(_apiRow('HTTP/2', t.protocols.http2));
+      rows.push(_apiRow('QUIC', t.protocols.quic));
+    }
+  }
+  if (!rows.length) rows.push('<div class="api-row"><div class="api-row-val v-na">Network API unavailable in this browser</div></div>');
+  return _apiCard('network', '📡', 'Network Information', rows.join(''));
+}
+
+function _buildLocationCard(loc) {
+  if (!loc || loc === 'Not available') {
+    return _apiCard('location', '📍', 'Location Information', '<div class="api-row"><div class="api-row-val v-na">Location data not available</div></div>');
+  }
+  let rows = [];
+  if (loc.ipapi && !loc.ipapi.error) {
+    const a = loc.ipapi;
+    rows.push(_subTitle('Primary Location (ipapi.co)'));
+    rows.push(_apiRow('IP Address', a.ip));
+    rows.push(_apiRow('City', a.city));
+    rows.push(_apiRow('Region', a.region));
+    rows.push(_apiRow('Country', a.country_name));
+    rows.push(_apiRow('Postal Code', a.postal));
+    rows.push(_apiRow('Coordinates', (a.latitude && a.longitude) ? a.latitude + ', ' + a.longitude : null));
+    rows.push(_apiRow('ISP / Org', a.org));
+    rows.push(_apiRow('ASN', a.asn));
+    rows.push(_apiRow('Timezone', a.timezone));
+    rows.push(_apiRow('UTC Offset', a.utc_offset));
+    rows.push(_apiRow('Currency', a.currency_name));
+    rows.push(_apiRow('Country Languages', a.languages));
+    rows.push(_apiRow('In EU', a.in_eu));
+    if (a.latitude && a.longitude) {
+      rows.push(`<div class="api-row"><div class="api-row-key">Map Links</div><div class="api-row-val"><a class="api-map-link" href="https://www.openstreetmap.org/?mlat=${a.latitude}&mlon=${a.longitude}&zoom=12" target="_blank" rel="noopener">🗺️ OpenStreetMap</a><a class="api-map-link" href="https://maps.google.com/?q=${a.latitude},${a.longitude}" target="_blank" rel="noopener">📍 Google Maps</a></div></div>`);
+    }
+  }
+  if (loc.ipwhois && !loc.ipwhois.error) {
+    const w = loc.ipwhois;
+    rows.push(_subTitle('Secondary Location (ipwhois.is)'));
+    rows.push(_apiRow('IP Address', w.ip));
+    rows.push(_apiRow('City', w.city));
+    rows.push(_apiRow('Region', w.region));
+    rows.push(_apiRow('Country', w.country));
+    rows.push(_apiRow('ISP', w.connection && w.connection.isp));
+    rows.push(_apiRow('ASN', w.connection && w.connection.asn));
+    rows.push(_apiRow('Timezone', w.timezone && w.timezone.id));
+    rows.push(_apiRow('UTC Offset', w.timezone && w.timezone.utc));
+  }
+  if (!rows.length) rows.push('<div class="api-row"><div class="api-row-val v-na">Location data not fully available</div></div>');
+  return _apiCard('location', '📍', 'Location Information', rows.join(''));
+}
+
+function _buildIpCard(sources) {
+  if (!sources || !sources.length) {
+    return _apiCard('ip', '🌍', 'IP Sources', '<div class="api-row"><div class="api-row-val v-na">No IP source data available</div></div>');
+  }
+  const items = sources.map(s => {
+    const ok = s.ip && !s.error;
+    let hostname = s.source;
+    try { hostname = new URL(s.source).hostname; } catch (_) {}
+    return `<div class="api-ip-item"><div class="api-ip-dot ${ok ? '' : 'err'}"></div><div class="api-ip-host">${_esc(hostname)}</div>${ok ? `<div class="api-ip-addr">${_esc(s.ip)}</div>` : `<div class="api-ip-err">${_esc(s.error || 'Error')}</div>`}</div>`;
+  }).join('');
+  return _apiCard('ip', '🌍', 'IP Sources', `<div class="api-ip-list">${items}</div>`);
+}
+
+function _buildSecurityCard(sec) {
+  if (!sec) return '';
+  let rows = [
+    _apiRow('HTTPS / Secure Context', sec.https),
+    _apiRow('Cross-Origin Isolated', sec.crossOriginIsolated),
+    _apiRow('LocalStorage Available', !!window.localStorage),
+    _apiRow('Cookies Enabled', navigator.cookieEnabled),
+  ];
+  if (sec.permissions && typeof sec.permissions === 'object') {
+    rows.push(_subTitle('Permissions'));
+    Object.entries(sec.permissions).forEach(([perm, state]) => {
+      rows.push(_apiRow(perm.charAt(0).toUpperCase() + perm.slice(1), state));
+    });
+  }
+  return _apiCard('security', '🔒', 'Security Information', rows.join(''));
+}
+
+function _buildMediaCard(mc) {
+  if (!mc) return '';
+  let rows = [];
+  if (mc.audio) {
+    rows.push(_subTitle('Audio Context'));
+    rows.push(_apiRow('Sample Rate', mc.audio.sampleRate ? mc.audio.sampleRate + ' Hz' : null));
+    rows.push(_apiRow('State', mc.audio.state));
+    rows.push(_apiRow('Base Latency', mc.audio.baseLatency));
+  }
+  if (mc.audioCodecs) {
+    rows.push(_subTitle('Audio Codec Support'));
+    const codecHtml = Object.entries(mc.audioCodecs).map(([codec, supported]) =>
+      `<span class="badge ${supported ? 'badge-green' : 'badge-red'}">${_esc(codec.replace('audio/', ''))}</span>`
+    ).join('');
+    rows.push(`<div class="api-row"><div class="api-row-key">Audio Codecs</div><div class="api-row-val api-codec-row">${codecHtml}</div></div>`);
+  }
+  if (mc.videoCodecs) {
+    rows.push(_subTitle('Video Codec Support'));
+    const codecHtml = Object.entries(mc.videoCodecs).map(([codec, supported]) =>
+      `<span class="badge ${supported ? 'badge-green' : 'badge-red'}">${_esc(codec.replace('video/', ''))}</span>`
+    ).join('');
+    rows.push(`<div class="api-row"><div class="api-row-key">Video Codecs</div><div class="api-row-val api-codec-row">${codecHtml}</div></div>`);
+  }
+  return _apiCard('media', '🎵', 'Media Capabilities', rows.join(''));
+}
+
+function _buildStorageCard(si) {
+  if (!si || si === 'Storage API not supported') {
+    return _apiCard('storage', '💾', 'Storage Information', '<div class="api-row"><div class="api-row-val v-na">Storage API not supported</div></div>');
+  }
+  const quotaMB = Math.round(si.quota / (1024 * 1024));
+  const usageMB = Math.round(si.usage / (1024 * 1024));
+  const availMB = Math.round(si.available / (1024 * 1024));
+  const pct = si.percentageUsed || 0;
+  const pgClass = pct > 80 ? 'api-pg-red' : pct > 50 ? 'api-pg-yellow' : 'api-pg-blue';
+  return _apiCard('storage', '💾', 'Storage Information', [
+    _apiRow('Total Quota', quotaMB.toLocaleString() + ' MB'),
+    _apiRow('Used', usageMB.toLocaleString() + ' MB'),
+    _apiRow('Available', availMB.toLocaleString() + ' MB'),
+    `<div class="api-row"><div class="api-row-key">Usage</div><div class="api-row-val">${pct}%<div class="api-progress-bg"><div class="api-progress-fill ${pgClass}" style="width:${pct}%"></div></div></div></div>`,
+  ].join(''));
+}
+
+function _buildBatteryCard(bat) {
+  if (!bat || bat === 'Not available') {
+    return _apiCard('battery', '🔋', 'Battery Information', '<div class="api-row"><div class="api-row-val v-na">Battery API not available</div></div>');
+  }
+  const pct = Math.round(bat.level * 100);
+  const pgClass = pct > 50 ? 'api-pg-green' : pct > 20 ? 'api-pg-yellow' : 'api-pg-red';
+  return _apiCard('battery', '🔋', 'Battery Information', [
+    `<div class="api-row"><div class="api-row-key">Battery Level</div><div class="api-row-val">${pct}%<div class="api-progress-bg"><div class="api-progress-fill ${pgClass}" style="width:${pct}%"></div></div></div></div>`,
+    _apiRow('Charging', bat.charging),
+    _apiRow('Time to Full', bat.charging && bat.chargingTime !== Infinity ? bat.chargingTime + 's' : bat.charging ? 'Calculating…' : 'N/A'),
+    _apiRow('Time Remaining', !bat.charging && bat.dischargingTime !== Infinity ? bat.dischargingTime + 's' : !bat.charging ? 'Calculating…' : 'N/A'),
+  ].join(''));
+}
+
+function _buildCapabilitiesCard(cap) {
+  if (!cap) return '';
+  let rows = [];
+  if (cap.webGL) {
+    rows.push(_subTitle('WebGL'));
+    rows.push(_apiRow('WebGL Supported', cap.webGL.supported));
+    rows.push(_apiRow('Version', cap.webGL.version));
+    if (cap.webGL.extensions) rows.push(_apiRow('Extensions', cap.webGL.extensions.length + ' supported'));
+  }
+  if (cap.audio) {
+    rows.push(_subTitle('Audio'));
+    rows.push(_apiRow('AudioContext', cap.audio.audioContext));
+    rows.push(_apiRow('Web Audio API', cap.audio.webAudio));
+  }
+  if (cap.connectivity) {
+    rows.push(_subTitle('Connectivity APIs'));
+    rows.push(_apiRow('Bluetooth API', cap.connectivity.bluetooth));
+    rows.push(_apiRow('USB API', cap.connectivity.usb));
+    rows.push(_apiRow('Serial API', cap.connectivity.serial));
+  }
+  if (cap.other) {
+    rows.push(_subTitle('Other'));
+    rows.push(_apiRow('WebAssembly', cap.other.webAssembly));
+    rows.push(_apiRow('SharedArrayBuffer', cap.other.sharedArrayBuffer));
+    rows.push(_apiRow('BigInt', cap.other.bigInt));
+  }
+  return _apiCard('capabilities', '⚡', 'System Capabilities', rows.join(''));
+}
+
+function setupApiPageInteractions() {
+  document.body.style.cssText = 'margin:0!important;padding:0!important;background:#0f0f1a!important;overflow-x:hidden;';
+
+  // Delegate copy-button clicks to avoid inline onclick handlers
+  document.getElementById('api-wrapper').addEventListener('click', (e) => {
+    const btn = e.target.closest('.api-row-copy');
+    if (btn) {
+      const row = btn.closest('.api-row');
+      if (row && row.dataset.copy !== undefined) copyText(row.dataset.copy);
+    }
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const secId = entry.target.id.replace('api-sec-', '');
+        document.querySelectorAll('.api-nav-link').forEach(link => {
+          link.classList.toggle('active', link.id === 'nav-' + secId);
+        });
+      }
+    });
+  }, { threshold: 0.2, rootMargin: '-56px 0px -50% 0px' });
+  document.querySelectorAll('[id^="api-sec-"]').forEach(el => observer.observe(el));
+}
+
+function apiScrollTo(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    const top = el.getBoundingClientRect().top + window.scrollY - 68;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
+}
+
+async function refreshApiData() {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:9999;font-size:1.2rem;color:#4fd1c5;';
+  overlay.textContent = '🔄 Refreshing…';
+  document.body.appendChild(overlay);
+  try {
+    const response = await getApiResponse();
+    window._apiData = response;
+    document.getElementById('api-wrapper').innerHTML = buildApiPageHtml(response);
+    setupApiPageInteractions();
+  } catch (e) { console.error(e); }
+  finally { overlay.remove(); }
+}
+
+function copyJsonData() {
+  if (!window._apiData) return;
+  navigator.clipboard.writeText(JSON.stringify(window._apiData, null, 2)).then(() => {
+    if (typeof Swal !== 'undefined') {
+      Swal.fire({ icon: 'success', title: 'Copied!', text: 'Full JSON copied to clipboard', timer: 1500, toast: true, position: 'bottom-end', showConfirmButton: false });
+    }
+  });
+}
+
+function shareApiLink() {
+  const url = encodeURI(window.location.origin + window.location.pathname) + '?api=true';
+  if (typeof Swal !== 'undefined') {
+    Swal.fire({
+      title: '🔗 Share API Link',
+      html: `<p style="color:#a0aec0;margin-bottom:12px;font-size:0.9rem;">Anyone opening this link will see <strong>their own</strong> system information.</p><input id="swal-api-url" type="text" value="${_esc(url)}" style="width:100%;padding:8px 12px;background:rgba(0,0,0,0.3);border:1px solid rgba(79,209,197,0.4);color:#4fd1c5;border-radius:6px;font-size:0.88rem;" readonly onclick="this.select()">`,
+      background: '#1a1a2e', color: '#e0e0e0',
+      confirmButtonText: '📋 Copy Link', confirmButtonColor: '#4fd1c5',
+      showCancelButton: true, cancelButtonText: 'Close',
+      preConfirm: () => { const el = document.getElementById('swal-api-url'); if (el) navigator.clipboard.writeText(el.value); }
+    });
+  } else {
+    prompt('Copy this API link:', url);
+  }
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    if (typeof Swal !== 'undefined') {
+      Swal.fire({ icon: 'success', title: 'Copied!', timer: 800, toast: true, position: 'bottom-end', showConfirmButton: false });
+    }
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
