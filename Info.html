@@ -1,242 +1,388 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <base href="https://github.com/unaveragetech/Sysinfo/blob/main/index.html">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Information Scanner - Home</title>
+    <title>SysInfo — Browser System Scanner</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+
       body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        color: #e0e0e0;
+        font-family: 'Segoe UI', system-ui, Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #0d0d1e 0%, #131c36 50%, #0d1a2e 100%);
+        background-attachment: fixed;
+        color: #e2e8f0;
         line-height: 1.6;
-        margin: 0;
-        padding: 0;
         min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
       }
 
+      /* ── Nav ── */
+      nav {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+        background: rgba(8,8,22,0.92); backdrop-filter: blur(14px);
+        border-bottom: 1px solid rgba(79,209,197,0.15);
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 24px; height: 56px;
+      }
+      .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+      .nav-brand-icon { font-size: 1.4rem; }
+      .nav-brand-name { color: #4fd1c5; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.5px; }
+      .nav-links { display: flex; align-items: center; gap: 8px; }
+      .nav-link {
+        color: #a0aec0; text-decoration: none; font-size: 0.88rem;
+        padding: 6px 14px; border-radius: 6px; transition: all 0.2s;
+      }
+      .nav-link:hover { background: rgba(79,209,197,0.1); color: #4fd1c5; }
+      .nav-cta {
+        background: #4fd1c5; color: #0d0d1e; font-weight: 700;
+        padding: 7px 18px; border-radius: 8px; text-decoration: none;
+        font-size: 0.88rem; transition: all 0.2s; box-shadow: 0 4px 14px rgba(79,209,197,0.3);
+      }
+      .nav-cta:hover { background: #38b2ac; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(79,209,197,0.4); }
+
+      /* ── Hero ── */
       .hero {
-        text-align: center;
-        padding: 4rem 2rem;
-        background: rgba(0, 0, 0, 0.3);
-        width: 100%;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        min-height: 100vh; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; text-align: center;
+        padding: 80px 24px 60px; position: relative; overflow: hidden;
       }
-
-      .container {
-        max-width: 1200px;
-        margin: 2rem auto;
-        padding: 0 2rem;
+      .hero::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: radial-gradient(ellipse 70% 55% at 50% 40%, rgba(79,209,197,0.12) 0%, transparent 70%);
+        pointer-events: none;
       }
-
-      h1 {
-        color: #4fd1c5;
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
+      .hero-badge {
+        display: inline-flex; align-items: center; gap: 7px;
+        background: rgba(79,209,197,0.1); border: 1px solid rgba(79,209,197,0.3);
+        color: #4fd1c5; padding: 5px 14px; border-radius: 20px;
+        font-size: 0.82rem; letter-spacing: 0.5px; margin-bottom: 24px;
       }
-
-      .subtitle {
-        color: #90cdf4;
-        font-size: 1.2rem;
-        margin-bottom: 2rem;
+      .hero h1 {
+        font-size: clamp(2rem, 6vw, 3.8rem); font-weight: 800; line-height: 1.15;
+        background: linear-gradient(135deg, #e2e8f0 0%, #4fd1c5 60%, #76e4f7 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text; margin-bottom: 20px;
       }
-
-      .cta-button {
-        display: inline-block;
-        background: #4fd1c5;
-        color: #1a1a2e;
-        padding: 1rem 2rem;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: bold;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(79, 209, 197, 0.3);
+      .hero-sub {
+        font-size: clamp(0.95rem, 2.5vw, 1.15rem); color: #a0aec0; max-width: 560px;
+        margin: 0 auto 36px; line-height: 1.7;
       }
-
-      .cta-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(79, 209, 197, 0.4);
+      .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+      .btn-primary {
+        background: linear-gradient(135deg, #4fd1c5, #38b2ac);
+        color: #0d0d1e; font-weight: 700; padding: 13px 28px; border-radius: 10px;
+        text-decoration: none; font-size: 0.97rem; transition: all 0.2s;
+        box-shadow: 0 6px 24px rgba(79,209,197,0.35); display: inline-flex; align-items: center; gap: 8px;
       }
-
-      .features {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 2rem;
-        margin: 3rem 0;
+      .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(79,209,197,0.45); }
+      .btn-secondary {
+        background: rgba(79,209,197,0.08); border: 1px solid rgba(79,209,197,0.35);
+        color: #4fd1c5; font-weight: 600; padding: 13px 28px; border-radius: 10px;
+        text-decoration: none; font-size: 0.97rem; transition: all 0.2s;
+        display: inline-flex; align-items: center; gap: 8px;
       }
+      .btn-secondary:hover { background: rgba(79,209,197,0.15); transform: translateY(-2px); }
+      .hero-scroll {
+        position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+        color: #4a5568; font-size: 0.8rem; display: flex; flex-direction: column;
+        align-items: center; gap: 6px; animation: bounce 2s infinite;
+      }
+      @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
 
+      /* ── Stats bar ── */
+      .stats {
+        display: flex; justify-content: center; flex-wrap: wrap;
+        gap: 0; background: rgba(0,0,0,0.35); border-top: 1px solid rgba(255,255,255,0.06);
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+      }
+      .stat-item {
+        flex: 1; min-width: 150px; max-width: 220px;
+        padding: 28px 20px; text-align: center;
+        border-right: 1px solid rgba(255,255,255,0.06);
+      }
+      .stat-item:last-child { border-right: none; }
+      .stat-num { font-size: 2rem; font-weight: 800; color: #4fd1c5; line-height: 1; margin-bottom: 6px; }
+      .stat-label { color: #718096; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+      /* ── Features ── */
+      .section-wrap { max-width: 1100px; margin: 0 auto; padding: 72px 24px; }
+      .section-label { color: #4fd1c5; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; }
+      .section-title { font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 700; color: #e2e8f0; margin-bottom: 14px; }
+      .section-sub { color: #718096; font-size: 0.97rem; max-width: 520px; line-height: 1.7; margin-bottom: 52px; }
+      .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
       .feature-card {
-        background: rgba(255, 255, 255, 0.1);
-        padding: 1.5rem;
-        border-radius: 10px;
-        backdrop-filter: blur(10px);
-        transition: transform 0.3s ease;
+        background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 14px; padding: 26px; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
       }
-
       .feature-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-4px); border-color: rgba(79,209,197,0.3);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.25);
       }
-
-      .feature-title {
-        color: #4fd1c5;
-        font-size: 1.2rem;
-        margin-bottom: 1rem;
+      .feature-icon {
+        width: 46px; height: 46px; background: rgba(79,209,197,0.1);
+        border: 1px solid rgba(79,209,197,0.2); border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.35rem; margin-bottom: 16px;
       }
+      .feature-title { color: #4fd1c5; font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+      .feature-desc { color: #a0aec0; font-size: 0.87rem; line-height: 1.65; }
 
+      /* ── How it works ── */
+      .how-bg { background: rgba(0,0,0,0.2); }
+      .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+      .step {
+        background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 12px; padding: 22px; position: relative; overflow: hidden;
+      }
+      .step-num {
+        position: absolute; top: 14px; right: 16px;
+        font-size: 2.5rem; font-weight: 900; color: rgba(79,209,197,0.08); line-height: 1;
+      }
+      .step-icon { font-size: 1.5rem; margin-bottom: 12px; }
+      .step-title { color: #e2e8f0; font-size: 0.93rem; font-weight: 600; margin-bottom: 6px; }
+      .step-desc { color: #718096; font-size: 0.83rem; line-height: 1.6; }
+
+      /* ── API section ── */
+      .api-showcase {
+        background: rgba(79,209,197,0.04); border: 1px solid rgba(79,209,197,0.15);
+        border-radius: 16px; padding: 36px; display: flex;
+        align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap;
+      }
+      .api-showcase-text h3 { color: #4fd1c5; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px; }
+      .api-showcase-text p { color: #a0aec0; font-size: 0.9rem; line-height: 1.7; max-width: 480px; }
+      .api-url-box {
+        display: flex; align-items: center; gap: 10px; margin-top: 16px;
+        background: rgba(0,0,0,0.3); border: 1px solid rgba(79,209,197,0.25);
+        border-radius: 8px; padding: 10px 14px;
+      }
+      .api-url-box a {
+        color: #4fd1c5; font-size: 0.84rem; word-break: break-all;
+        text-decoration: none; font-family: 'Consolas', monospace;
+      }
+      .api-url-box a:hover { text-decoration: underline; }
+
+      /* ── Chart ── */
+      .chart-wrap {
+        background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 16px; padding: 32px;
+      }
+      .chart-wrap h3 { color: #4fd1c5; font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; }
+
+      /* ── Footer ── */
       footer {
-        text-align: center;
-        padding: 2rem;
-        margin-top: auto;
-        width: 100%;
-        background: rgba(0, 0, 0, 0.3);
+        background: rgba(0,0,0,0.4); border-top: 1px solid rgba(255,255,255,0.06);
+        text-align: center; padding: 40px 24px;
       }
+      .footer-brand { font-size: 1.1rem; font-weight: 700; color: #4fd1c5; margin-bottom: 10px; }
+      .footer-tagline { color: #4a5568; font-size: 0.85rem; margin-bottom: 20px; }
+      .footer-links { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+      .footer-links a { color: #718096; text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+      .footer-links a:hover { color: #4fd1c5; }
+      .footer-copy { color: #2d3748; font-size: 0.78rem; }
 
-      .chart-container {
-        background: rgba(255, 255, 255, 0.1);
-        padding: 2rem;
-        border-radius: 15px;
-        margin: 2rem 0;
-      }
-
-      .workflow-container {
-        background: rgba(255, 255, 255, 0.1);
-        padding: 2rem;
-        border-radius: 15px;
-        margin: 2rem 0;
-      }
-
-      .workflow-step {
-        background: rgba(79, 209, 197, 0.1);
-        padding: 1rem;
-        border-radius: 8px;
-        margin: 1rem 0;
-        border-left: 4px solid #4fd1c5;
-      }
-
-      @keyframes float {
-        0% {
-          transform: translateY(0px);
-        }
-        50% {
-          transform: translateY(-10px);
-        }
-        100% {
-          transform: translateY(0px);
-        }
-      }
-
-      .floating-icon {
-        animation: float 3s ease-in-out infinite;
-        font-size: 3rem;
-        margin: 1rem 0;
+      /* ── Responsive ── */
+      @media (max-width: 640px) {
+        .nav-links .nav-link { display: none; }
+        .stat-item { min-width: 120px; padding: 20px 14px; }
+        .api-showcase { padding: 24px; }
+        .section-wrap { padding: 48px 16px; }
       }
     </style>
   </head>
   <body>
-    <div class="hero">
-      <div class="floating-icon">🔍</div>
-      <h1>System Information Scanner</h1>
-      <p class="subtitle">Comprehensive system analysis tool for your browser</p>
-      <a href="https://unaveragetech.github.io/Sysinfo/index.html" class="cta-button">Launch Scanner</a>
+
+    <!-- Navigation -->
+    <nav>
+      <a href="#" class="nav-brand">
+        <span class="nav-brand-icon">🔍</span>
+        <span class="nav-brand-name">SysInfo</span>
+      </a>
+      <div class="nav-links">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#how-it-works" class="nav-link">How It Works</a>
+        <a href="#api" class="nav-link">API</a>
+        <a href="index.html" class="nav-cta">🚀 Launch Scanner</a>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-badge">✨ 100% client-side · No data stored</div>
+      <h1>Know Everything About<br>Your Browser &amp; Network</h1>
+      <p class="hero-sub">
+        A real-time system scanner that reveals your browser, hardware, location,
+        IP addresses, and security posture — all without sending data anywhere.
+      </p>
+      <div class="hero-btns">
+        <a href="index.html" class="btn-primary">🚀 Launch Scanner</a>
+        <a href="index.html?api=true" class="btn-secondary">🔗 View API Report</a>
+      </div>
+      <div class="hero-scroll">
+        <span>Scroll to explore</span>
+        <span>↓</span>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-item"><div class="stat-num">13+</div><div class="stat-label">Data Categories</div></div>
+      <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">IP/Geo Sources</div></div>
+      <div class="stat-item"><div class="stat-num">5</div><div class="stat-label">IP Verifiers</div></div>
+      <div class="stat-item"><div class="stat-num">0</div><div class="stat-label">Data Stored</div></div>
     </div>
 
-    <div class="container">
-      <div class="features">
-        <div class="feature-card">
-          <div class="feature-title">System Analysis</div>
-          <p>Detailed information about your hardware, software, and browser configuration including CPU, memory, and graphics capabilities.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-title">Location Services</div>
-          <p>Multi-source IP geolocation and GPS positioning with detailed accuracy metrics from various providers including ipify, AWS, and more.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-title">Network Details</div>
-          <p>Comprehensive network information including connection type, speed, latency, and detailed IP information from multiple sources.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-title">API Access</div>
-          <p>Access all system information programmatically through our shareable API endpoint. Send a link to anyone and they'll see their own system data in a rich, formatted display.</p>
-          <p style="margin-top:0.75rem;">
-            <a href="https://unaveragetech.github.io/Sysinfo/index.html?api=true"
-               style="color:#4fd1c5;word-break:break-all;">
-              https://unaveragetech.github.io/Sysinfo/index.html?api=true
-            </a>
-          </p>
+    <!-- Features -->
+    <section id="features">
+      <div class="section-wrap">
+        <div class="section-label">What it scans</div>
+        <h2 class="section-title">Comprehensive System Analysis</h2>
+        <p class="section-sub">Collects detailed information directly in your browser — no server required.</p>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🌐</div>
+            <div class="feature-title">Browser &amp; Platform</div>
+            <div class="feature-desc">User agent, language, plugins, rendering capabilities, WebGL, canvas, CSS features, and browser preferences.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">💻</div>
+            <div class="feature-title">Hardware Details</div>
+            <div class="feature-desc">CPU core count, device memory, GPU vendor &amp; renderer, touch points, screen orientation, and color gamut.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📍</div>
+            <div class="feature-title">Location &amp; IP</div>
+            <div class="feature-desc">Cross-validated IP geolocation from three independent providers — ipapi.co, ipinfo.io, and ipwhois.is.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📡</div>
+            <div class="feature-title">Network Info</div>
+            <div class="feature-desc">Connection type, downlink speed, round-trip time, HTTP/2 &amp; QUIC support, and latency measurements.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <div class="feature-title">Security &amp; Permissions</div>
+            <div class="feature-desc">HTTPS / secure context status, cross-origin isolation, permission states for camera, mic, geolocation, and more.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🎵</div>
+            <div class="feature-title">Media Capabilities</div>
+            <div class="feature-desc">Audio context info, codec support for audio and video formats, MediaRecorder availability, and recording capabilities.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">💾</div>
+            <div class="feature-title">Storage &amp; Battery</div>
+            <div class="feature-desc">Storage quota and usage with a live progress bar, plus battery level, charging status, and time estimates.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-title">System Capabilities</div>
+            <div class="feature-desc">WebAssembly, SharedArrayBuffer, BigInt, Bluetooth API, USB API, Serial API, and WebGL extension count.</div>
+          </div>
         </div>
       </div>
+    </section>
 
-      <div class="chart-container">
-        <h2>Performance Metrics</h2>
-        <canvas id="performanceChart"></canvas>
+    <!-- How it works -->
+    <section id="how-it-works" class="how-bg">
+      <div class="section-wrap">
+        <div class="section-label">Process</div>
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-sub">Seven steps from page load to fully detailed report, all within your browser.</p>
+        <div class="steps">
+          <div class="step"><span class="step-num">1</span><div class="step-icon">📥</div><div class="step-title">Page Loads</div><div class="step-desc">Browser requests the single-page application — no backend needed.</div></div>
+          <div class="step"><span class="step-num">2</span><div class="step-icon">🧩</div><div class="step-title">Browser APIs</div><div class="step-desc">Navigator, Screen, WebGL, AudioContext, and other APIs are queried for local data.</div></div>
+          <div class="step"><span class="step-num">3</span><div class="step-icon">🌍</div><div class="step-title">IP Verification</div><div class="step-desc">Five CORS-friendly sources confirm your public IP address independently.</div></div>
+          <div class="step"><span class="step-num">4</span><div class="step-icon">📍</div><div class="step-title">Geolocation</div><div class="step-desc">Three geo providers cross-validate city, region, country, ISP, and coordinates.</div></div>
+          <div class="step"><span class="step-num">5</span><div class="step-icon">🔬</div><div class="step-title">Deep Analysis</div><div class="step-desc">Hardware specs, codec support, permissions, and security context are all compiled.</div></div>
+          <div class="step"><span class="step-num">6</span><div class="step-icon">🖥️</div><div class="step-title">Live Display</div><div class="step-desc">Results render in an interactive, collapsible-sidebar dashboard with copy support.</div></div>
+          <div class="step"><span class="step-num">7</span><div class="step-icon">🔗</div><div class="step-title">API Sharing</div><div class="step-desc">Share a link — anyone who opens it sees their own formatted system report.</div></div>
+        </div>
       </div>
+    </section>
 
-      <div class="workflow-container">
-        <h2>How It Works</h2>
-        <div class="workflow-step">1. Initial Request: Browser sends request to access system information</div>
-        <div class="workflow-step">2. Data Collection: Script collects system information from multiple sources</div>
-        <div class="workflow-step">3. IP Verification: Multiple IP checking services are queried for validation</div>
-        <div class="workflow-step">4. Location Detection: Geolocation data is gathered from various providers</div>
-        <div class="workflow-step">5. System Analysis: Detailed hardware and software information is compiled</div>
-        <div class="workflow-step">6. Data Display: Information is presented in an organized, user-friendly interface</div>
-        <div class="workflow-step">7. API Access: Data can be accessed via REST API with sharable links</div>
+    <!-- API section -->
+    <section id="api">
+      <div class="section-wrap">
+        <div class="section-label">Shareable Reports</div>
+        <h2 class="section-title">One Link, Any Visitor</h2>
+        <p class="section-sub">Send the API link to anyone — they'll see their own complete system report, not yours.</p>
+        <div class="api-showcase">
+          <div class="api-showcase-text">
+            <h3>🔗 Shareable API Endpoint</h3>
+            <p>
+              Append <code style="color:#f6e05e;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px">?api=true</code>
+              to the scanner URL to get a rich, formatted report page.
+              The report is generated entirely in the visitor's browser using their own data.
+            </p>
+            <div class="api-url-box">
+              <span>🔗</span>
+              <a href="index.html?api=true">https://unaveragetech.github.io/Sysinfo/index.html?api=true</a>
+            </div>
+          </div>
+          <a href="index.html?api=true" class="btn-primary" style="flex-shrink:0">View My Report →</a>
+        </div>
+
+        <div class="chart-wrap" style="margin-top:32px">
+          <h3>📊 Capability Coverage</h3>
+          <canvas id="performanceChart"></canvas>
+        </div>
       </div>
-    </div>
+    </section>
 
+    <!-- Footer -->
     <footer>
-      <p>Privacy-focused system analysis tool - No data collection or storage</p>
-      <a href="sysinfo.html" class="cta-button">Get Started</a>
+      <div class="footer-brand">🔍 SysInfo</div>
+      <div class="footer-tagline">Privacy-first system analysis — nothing is collected or stored</div>
+      <div class="footer-links">
+        <a href="index.html">Scanner</a>
+        <a href="index.html?api=true">API Report</a>
+        <a href="https://github.com/unaveragetech/Sysinfo" target="_blank" rel="noopener">GitHub</a>
+      </div>
+      <div class="footer-copy">Open source · Client-side only · No tracking</div>
     </footer>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', () => {
         const ctx = document.getElementById('performanceChart').getContext('2d');
-        const chart = new Chart(ctx, {
+        new Chart(ctx, {
           type: 'radar',
           data: {
-            labels: ['System Analysis', 'Location Detection', 'Network Speed', 'API Response', 'Data Processing', 'UI Rendering'],
+            labels: ['Browser Detection','Location Accuracy','Network Analysis','API Coverage','Security Scanning','Media Capabilities'],
             datasets: [{
-              label: 'Performance Metrics',
-              data: [95, 90, 85, 95, 88, 92],
-              backgroundColor: 'rgba(79, 209, 197, 0.2)',
-              borderColor: 'rgba(79, 209, 197, 1)',
-              pointBackgroundColor: 'rgba(79, 209, 197, 1)',
-              pointBorderColor: '#fff',
+              label: 'Coverage',
+              data: [96, 88, 82, 95, 90, 85],
+              backgroundColor: 'rgba(79,209,197,0.15)',
+              borderColor: 'rgba(79,209,197,0.9)',
+              pointBackgroundColor: 'rgba(79,209,197,1)',
+              pointBorderColor: '#0d0d1e',
               pointHoverBackgroundColor: '#fff',
-              pointHoverBorderColor: 'rgba(79, 209, 197, 1)'
+              pointHoverBorderColor: 'rgba(79,209,197,1)',
+              borderWidth: 2,
             }]
           },
           options: {
             scales: {
               r: {
-                beginAtZero: true,
-                max: 100,
-                ticks: {
-                  stepSize: 20
-                },
-                grid: {
-                  color: 'rgba(255, 255, 255, 0.1)'
-                },
-                angleLines: {
-                  color: 'rgba(255, 255, 255, 0.1)'
-                },
-                pointLabels: {
-                  color: '#e0e0e0'
-                }
+                beginAtZero: true, max: 100,
+                ticks: { stepSize: 20, color: '#4a5568', backdropColor: 'transparent' },
+                grid: { color: 'rgba(255,255,255,0.07)' },
+                angleLines: { color: 'rgba(255,255,255,0.07)' },
+                pointLabels: { color: '#a0aec0', font: { size: 12 } }
               }
             },
-            plugins: {
-              legend: {
-                labels: {
-                  color: '#e0e0e0'
-                }
-              }
-            }
+            plugins: { legend: { labels: { color: '#a0aec0' } } }
           }
+        });
+
+        // Smooth-scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+          a.addEventListener('click', e => {
+            const target = document.querySelector(a.getAttribute('href'));
+            if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+          });
         });
       });
     </script>
